@@ -1,0 +1,742 @@
+/*
+ * Global stylesheet for the CmdRest website.
+ *
+ * Design language: light background, generous white space, slate ink for
+ * text and terminal-green accents. All colors, spacing and fonts are
+ * defined as CSS custom properties in :root so the theme can be adjusted
+ * in one place.
+ */
+
+:root {
+  /* ---- Color palette -------------------------------------------------- */
+  --color-bg: #f8fafc;            /* page background (near-white slate)   */
+  --color-surface: #ffffff;       /* cards and elevated surfaces          */
+  --color-ink: #0f172a;           /* headings / primary text (slate-900)  */
+  --color-ink-soft: #475569;      /* body text (slate-600)                */
+  --color-ink-faint: #94a3b8;     /* muted text (slate-400)               */
+  --color-line: #e2e8f0;          /* hairline borders (slate-200)         */
+  --color-green: #16a34a;         /* primary accent (terminal green)      */
+  --color-green-dark: #15803d;    /* hover / active accent                */
+  --color-green-bright: #4ade80;  /* glows and highlights on dark chrome  */
+  --color-green-soft: #dcfce7;    /* soft green wash backgrounds          */
+  --color-terminal: #0f172a;      /* dark chrome for code blocks          */
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --container-width: 1120px;
+  --radius: 14px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 16px 40px rgba(15, 23, 42, 0.1);
+}
+
+/* ---- Reset & base ------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Smooth scrolling for in-page anchor navigation. */
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  color: var(--color-ink);
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--color-green);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-green-dark);
+}
+
+img, svg {
+  max-width: 100%;
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+/* ---- Layout helpers ----------------------------------------------------- */
+
+/* Horizontal page container with generous side padding on small screens. */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Vertical rhythm for page sections: lots of white space by design. */
+.section {
+  padding: 96px 0;
+}
+
+.section--tight {
+  padding: 64px 0;
+}
+
+/* Section heading block: eyebrow + title + lede, centered. */
+.section-heading {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 56px;
+}
+
+.section-heading__eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-green);
+  background: var(--color-green-soft);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 16px;
+}
+
+.section-heading__title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+}
+
+.section-heading__lede {
+  font-size: 17px;
+  color: var(--color-ink-soft);
+}
+
+/* ---- App shell ---------------------------------------------------------- */
+
+/* The app content sits above the fixed decorative tech background. */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__main {
+  flex: 1;
+}
+
+/* ---- Decorative tech background ---------------------------------------- */
+
+/* Fixed, non-interactive layer of faint architecture/CI-CD line drawings. */
+.tech-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tech-background svg {
+  position: absolute;
+  color: var(--color-ink);
+  opacity: 0.05;
+}
+
+.tech-background__grid {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tech-background__arch {
+  top: 12%;
+  right: -140px;
+  width: 520px;
+}
+
+.tech-background__pipeline {
+  bottom: 8%;
+  left: -120px;
+  width: 560px;
+}
+
+/* ---- Navbar -------------------------------------------------------------- */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(248, 250, 252, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+}
+
+.navbar__brand:hover {
+  color: var(--color-ink);
+}
+
+.navbar__logo {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar__link {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.navbar__link:hover {
+  color: var(--color-ink);
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.navbar__link--active {
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+}
+
+.navbar__github {
+  margin-left: 10px;
+}
+
+/* Hamburger button is hidden on desktop, shown on mobile. */
+.navbar__toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+
+@media (max-width: 760px) {
+  .navbar__toggle {
+    display: inline-flex;
+  }
+
+  /* Collapse the link row into a dropdown panel under the bar. */
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-line);
+    padding: 12px 24px 20px;
+    gap: 4px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__github {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 10px;
+  font-size: 15.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.button--primary {
+  background: var(--color-green);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28);
+}
+
+.button--primary:hover {
+  background: var(--color-green-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.button--secondary {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-line);
+  box-shadow: var(--shadow-card);
+}
+
+.button--secondary:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink-faint);
+  transform: translateY(-1px);
+}
+
+/* ---- Hero ------------------------------------------------------------------ */
+
+.hero {
+  padding: 88px 0 72px;
+}
+
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+  border-radius: 999px;
+  padding: 7px 16px;
+  margin-bottom: 22px;
+}
+
+.hero__title {
+  font-size: clamp(36px, 5.4vw, 58px);
+  font-weight: 800;
+}
+
+.hero__title em {
+  font-style: normal;
+  color: var(--color-green);
+}
+
+.hero__lede {
+  font-size: 18px;
+  max-width: 34em;
+  margin-bottom: 30px;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.hero__platforms {
+  display: flex;
+  gap: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+}
+
+.hero__scene {
+  position: relative;
+  height: 460px;
+  border-radius: var(--radius);
+}
+
+/* The three.js canvas fills its wrapper. */
+.hero__scene canvas {
+  border-radius: var(--radius);
+}
+
+@media (max-width: 900px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__scene {
+    height: 340px;
+  }
+}
+
+/* ---- Feature cards ---------------------------------------------------------- */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 22px;
+}
+
+.feature-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 26px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.feature-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--color-green-soft);
+  color: var(--color-green-dark);
+  margin-bottom: 16px;
+}
+
+.feature-card__title {
+  font-size: 17.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.feature-card__description {
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Category section on the Features page. */
+.feature-category {
+  margin-bottom: 64px;
+}
+
+.feature-category:last-child {
+  margin-bottom: 0;
+}
+
+.feature-category__title {
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.feature-category__count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+  border-radius: 999px;
+  padding: 3px 11px;
+}
+
+/* ---- Code blocks -------------------------------------------------------------- */
+
+.code-block {
+  background: var(--color-terminal);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  text-align: left;
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.code-block__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.code-block__dot--red { background: #f87171; }
+.code-block__dot--yellow { background: #fbbf24; }
+.code-block__dot--green { background: #4ade80; }
+
+.code-block__title {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.code-block__body {
+  margin: 0;
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #e2e8f0;
+}
+
+/* Two-column demo layout on the home page. */
+.demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .demo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Download cards -------------------------------------------------------------- */
+
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  margin-bottom: 48px;
+}
+
+.download-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-card__icon {
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.download-card__name {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.download-card__note {
+  font-size: 14.5px;
+  flex: 1;
+}
+
+/* ---- CTA banner -------------------------------------------------------------------- */
+
+.cta-banner {
+  background: var(--color-terminal);
+  border-radius: 20px;
+  padding: 64px 40px;
+  text-align: center;
+  color: #cbd5e1;
+}
+
+.cta-banner__title {
+  color: #ffffff;
+  font-size: clamp(26px, 3.6vw, 36px);
+  font-weight: 800;
+}
+
+.cta-banner__title em {
+  font-style: normal;
+  color: var(--color-green-bright);
+}
+
+.cta-banner .button--secondary {
+  background: transparent;
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+}
+
+.cta-banner .button--secondary:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cta-banner__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+/* ---- Link cards (Docs page) ---------------------------------------------------------- */
+
+.link-card {
+  display: block;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  color: var(--color-ink-soft);
+}
+
+.link-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  color: var(--color-ink-soft);
+}
+
+.link-card__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.link-card__arrow {
+  margin-left: auto;
+  color: var(--color-green);
+}
+
+.link-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+  margin-bottom: 48px;
+}
+
+/* ---- Footer ------------------------------------------------------------------------------ */
+
+.footer {
+  border-top: 1px solid var(--color-line);
+  background: var(--color-surface);
+  padding: 48px 0 40px;
+  font-size: 14.5px;
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.footer__brand {
+  font-weight: 800;
+  color: var(--color-ink);
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.footer__note {
+  max-width: 34em;
+  color: var(--color-ink-faint);
+  margin: 0;
+}
+
+.footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer__heading {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-ink-faint);
+  margin-bottom: 4px;
+}
+
+/* ---- Page hero (interior pages) ------------------------------------------------------------ */
+
+.page-hero {
+  padding: 72px 0 8px;
+  text-align: center;
+}
+
+.page-hero__title {
+  font-size: clamp(32px, 4.6vw, 46px);
+  font-weight: 800;
+}
+
+.page-hero__lede {
+  font-size: 17.5px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ---- Misc ------------------------------------------------------------------------------------ */
+
+/* Accessible focus outline for keyboard users. */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(22, 163, 74, 0.5);
+  outline-offset: 2px;
+}
+
+/* Respect users who prefer reduced motion: disable our transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto;
+  }
+}
