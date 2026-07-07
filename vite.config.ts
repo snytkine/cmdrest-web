@@ -32,10 +32,6 @@ export default defineConfig({
         'src/main.tsx',
         // Test helpers are not production code.
         'src/test/**',
-        // The R3F scene requires a real WebGL context, which jsdom cannot
-        // provide. All of its geometry/animation math lives in the pure
-        // (and fully tested) networkGraph.ts module instead.
-        'src/three/NetworkScene.tsx',
       ],
     },
   },

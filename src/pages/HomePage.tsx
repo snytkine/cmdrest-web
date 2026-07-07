@@ -1,8 +1,7 @@
 /**
- * Home page: hero with the 3D network animation, highlighted features,
+ * Home page: hero with the Matrix rain animation, highlighted features,
  * a YAML + CLI demo section and a closing call-to-action banner.
  */
-import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { site } from '../content/site';
 import { getHighlightedFeatures } from '../content/features';
@@ -10,16 +9,8 @@ import { yamlExample, cliExample } from '../content/snippets';
 import { FeatureCard } from '../components/FeatureCard';
 import { CodeBlock } from '../components/CodeBlock';
 import { SectionHeading } from '../components/SectionHeading';
+import { MatrixScene } from '../matrix/MatrixScene';
 import { logInteraction } from '../logging';
-
-/**
- * The three.js scene is code-split with React.lazy so the (large) three.js
- * bundle does not block the first paint of the hero text; the Suspense
- * fallback keeps the layout stable while it loads.
- */
-const NetworkScene = lazy(() =>
-  import('../three/NetworkScene').then((module) => ({ default: module.NetworkScene })),
-);
 
 /** The landing page. */
 export function HomePage(): React.JSX.Element {
@@ -66,11 +57,7 @@ export function HomePage(): React.JSX.Element {
             </div>
           </div>
           <div className="hero__scene" data-testid="hero-scene">
-            {/* Empty fallback: the reserved box simply stays blank until
-                the 3D bundle arrives. */}
-            <Suspense fallback={null}>
-              <NetworkScene />
-            </Suspense>
+            <MatrixScene />
           </div>
         </div>
       </section>

@@ -9,10 +9,11 @@ import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import { renderWithRouter, captureLogs } from './test/helpers';
 
-// The 3D scene needs a WebGL context that jsdom cannot provide; its
-// geometry is unit-tested separately in networkGraph.test.ts.
-vi.mock('./three/NetworkScene', () => ({
-  NetworkScene: () => <div data-testid="network-scene-mock" />,
+// The Matrix rain scene needs a canvas 2D context that jsdom cannot
+// provide; it is unit-tested separately in matrixRain.test.ts and
+// MatrixScene.test.tsx.
+vi.mock('./matrix/MatrixScene', () => ({
+  MatrixScene: () => <div data-testid="matrix-scene-mock" />,
 }));
 
 /** Restore function of the log capture installed per-test. */
