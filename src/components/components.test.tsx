@@ -12,7 +12,7 @@ import { TechBackground } from './TechBackground';
 import { Footer } from './Footer';
 import { features } from '../content/features';
 import { site } from '../content/site';
-import { captureLogs } from '../test/helpers';
+import { captureLogs, renderWithRouter } from '../test/helpers';
 import type { Feature } from '../content/features';
 
 describe('FeatureIcon', () => {
@@ -98,8 +98,10 @@ describe('TechBackground', () => {
 });
 
 describe('Footer', () => {
+  // The footer contains a router <Link> to the internal docs section,
+  // so it must render inside a router.
   it('mentions the open source nature and links to the project resources', () => {
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     expect(screen.getByText(/free and open source/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Source code' })).toHaveAttribute(
       'href',
@@ -109,20 +111,18 @@ describe('Footer', () => {
       'href',
       site.links.releases,
     );
-    expect(screen.getByRole('link', { name: 'Documentation' })).toHaveAttribute(
-      'href',
-      site.links.documentation,
-    );
+    // Documentation now lives on the site itself.
+    expect(screen.getByRole('link', { name: 'Documentation' })).toHaveAttribute('href', '/docs');
   });
 
   it('shows the current year in the copyright notice', () => {
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     expect(screen.getByText(new RegExp(`© ${new Date().getFullYear()}`))).toBeInTheDocument();
   });
 
   it('logs outbound link clicks', () => {
     const { capture, restore } = captureLogs();
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     screen.getByRole('link', { name: 'Source code' }).click();
     expect(
       capture.records.some(
@@ -136,7 +136,7 @@ describe('Footer', () => {
 
   it('logs a distinct target for every outbound footer link', () => {
     const { capture, restore } = captureLogs();
-    render(<Footer />);
+    renderWithRouter(<Footer />);
     // Each entry pairs an accessible link name with the target suffix
     // its click handler is expected to report.
     const links: ReadonlyArray<[RegExp | string, string]> = [

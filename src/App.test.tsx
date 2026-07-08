@@ -50,11 +50,21 @@ describe('App routing', () => {
     expect(screen.getByRole('heading', { name: /Download CmdRest/ })).toBeInTheDocument();
   });
 
-  it('renders the Docs page at /docs directly', () => {
+  it('renders the docs section at /docs with the introduction document', async () => {
     renderWithRouter(<App />, '/docs');
-    expect(
-      screen.getByRole('heading', { name: /Documentation & resources/ }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Documentation' })).toBeInTheDocument();
+    // The index route loads and renders the first configured document.
+    expect(await screen.findByTestId('doc-introduction')).toBeInTheDocument();
+  });
+
+  it('renders a documentation page at /docs/<slug>', async () => {
+    renderWithRouter(<App />, '/docs/cli-reference');
+    expect(await screen.findByTestId('doc-cli-reference')).toBeInTheDocument();
+  });
+
+  it('renders the Examples page at /docs/examples', () => {
+    renderWithRouter(<App />, '/docs/examples');
+    expect(screen.getByRole('heading', { name: 'Your first test suite' })).toBeInTheDocument();
   });
 
   it('shows the 404 page for unknown paths', () => {

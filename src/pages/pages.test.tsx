@@ -9,10 +9,13 @@ import { HomePage } from './HomePage';
 import { FeaturesPage } from './FeaturesPage';
 import { DownloadPage } from './DownloadPage';
 import { DocsPage } from './DocsPage';
+import { DocArticlePage } from './DocArticlePage';
+import { DocExamplesPage } from './DocExamplesPage';
 import { NotFoundPage } from './NotFoundPage';
 import { features, getHighlightedFeatures } from '../content/features';
 import { downloadTargets } from '../content/downloads';
 import { site } from '../content/site';
+import { docNavItems, firstDocPage } from '../docs/config';
 import { renderWithRouter, captureLogs } from '../test/helpers';
 import type { CaptureTransport } from '../test/helpers';
 
@@ -57,10 +60,7 @@ describe('HomePage', () => {
       'href',
       site.links.releases,
     );
-    expect(screen.getByRole('link', { name: 'Read the docs' })).toHaveAttribute(
-      'href',
-      site.links.documentation,
-    );
+    expect(screen.getByRole('link', { name: 'Read the docs' })).toHaveAttribute('href', '/docs');
   });
 
   it('shows every highlighted feature as a card', () => {
@@ -164,30 +164,60 @@ describe('DownloadPage', () => {
 });
 
 describe('DocsPage', () => {
-  it('renders resource cards for docs, source and releases', () => {
+  it('renders a sidebar link for every configured page plus Examples', () => {
     renderWithRouter(<DocsPage />);
-    expect(screen.getByTestId('resource-documentation')).toHaveAttribute(
-      'href',
-      site.links.documentation,
-    );
-    expect(screen.getByTestId('resource-source')).toHaveAttribute('href', site.links.sourceCode);
-    expect(screen.getByTestId('resource-releases')).toHaveAttribute('href', site.links.releases);
+    for (const item of docNavItems) {
+      expect(screen.getByRole('link', { name: item.title })).toHaveAttribute('href', item.path);
+    }
   });
 
-  it('shows the quick-start YAML example', () => {
+  it('lists Examples as the last sidebar entry', () => {
     renderWithRouter(<DocsPage />);
-    expect(screen.getByText('users-api.test.yaml')).toBeInTheDocument();
+    const nav = screen.getByRole('complementary', { name: 'Documentation pages' });
+    const labels = [...nav.querySelectorAll('a')].map((anchor) => anchor.textContent);
+    expect(labels.at(-1)).toBe('Examples');
   });
 
-  it('logs a docs-resource-click interaction naming the resource', () => {
+  it('logs a docs-nav-click interaction naming the page', () => {
     renderWithRouter(<DocsPage />);
-    fireEvent.click(screen.getByTestId('resource-documentation'));
+    fireEvent.click(screen.getByRole('link', { name: 'Assertions' }));
     expect(capture.records).toContainEqual(
-      expect.objectContaining({
-        message: 'docs-resource-click',
-        data: { resource: 'documentation' },
-      }),
+      expect.objectContaining({ message: 'docs-nav-click', data: { page: 'Assertions' } }),
     );
+  });
+});
+
+describe('DocArticlePage', () => {
+  it('renders the markdown document for the given slug', async () => {
+    renderWithRouter(<DocArticlePage slug={firstDocPage.slug} />);
+    const article = await screen.findByTestId(`doc-${firstDocPage.slug}`);
+    expect(article).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      /Application Introduction/,
+    );
+  });
+
+  it('rewrites cross-document markdown links to internal routes', async () => {
+    renderWithRouter(<DocArticlePage slug={firstDocPage.slug} />);
+    await screen.findByTestId(`doc-${firstDocPage.slug}`);
+    expect(screen.getByRole('link', { name: 'Getting Started' })).toHaveAttribute(
+      'href',
+      '/docs/getting-started',
+    );
+  });
+
+  it('shows the 404 page for an unknown slug', () => {
+    renderWithRouter(<DocArticlePage slug="no-such-doc" />);
+    expect(screen.getByRole('heading', { name: '404' })).toBeInTheDocument();
+  });
+});
+
+describe('DocExamplesPage', () => {
+  it('shows the quick-start YAML example', () => {
+    renderWithRouter(<DocExamplesPage />);
+    expect(screen.getByRole('heading', { name: 'Your first test suite' })).toBeInTheDocument();
+    // The filename appears both in the intro copy and the code-block title.
+    expect(screen.getAllByText('users-api.test.yaml').length).toBeGreaterThan(0);
   });
 });
 

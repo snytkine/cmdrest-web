@@ -1,7 +1,8 @@
 /**
  * Site footer: brand blurb (with the open-source note) and a column of
- * project links — source code, releases and documentation.
+ * project links — source code, releases and the documentation section.
  */
+import { Link } from 'react-router-dom';
 import { site } from '../content/site';
 import { logInteraction } from '../logging';
 
@@ -36,9 +37,9 @@ export function Footer(): React.JSX.Element {
           <a href={site.links.releases} target="_blank" rel="noreferrer" onClick={() => handleClick('releases')}>
             Releases &amp; downloads
           </a>
-          <a href={site.links.documentation} target="_blank" rel="noreferrer" onClick={() => handleClick('docs')}>
+          <Link to="/docs" onClick={() => handleClick('docs')}>
             Documentation
-          </a>
+          </Link>
         </nav>
       </div>
     </footer>

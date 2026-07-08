@@ -727,6 +727,169 @@ code {
   margin: 0 auto;
 }
 
+/* ---- Documentation section --------------------------------------------------------------- */
+
+/* Sidebar + content, collapsing to a single column on small screens. */
+.docs-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.docs-nav {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.docs-nav__link {
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--color-ink-soft);
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.docs-nav__link:hover {
+  color: var(--color-ink);
+  background: var(--color-green-soft);
+}
+
+.docs-nav__link--active {
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+  font-weight: 700;
+}
+
+.docs-loading {
+  color: var(--color-ink-faint);
+}
+
+@media (max-width: 900px) {
+  .docs-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .docs-nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* ---- Rendered markdown -------------------------------------------------------------------- */
+
+.markdown h1 {
+  font-size: 32px;
+  margin-bottom: 0.75em;
+}
+
+.markdown h2 {
+  font-size: 24px;
+  margin-top: 1.75em;
+  padding-top: 0.5em;
+  border-top: 1px solid var(--color-line);
+}
+
+.markdown h3 {
+  font-size: 19px;
+  margin-top: 1.5em;
+}
+
+.markdown h4 {
+  font-size: 16px;
+  margin-top: 1.25em;
+}
+
+.markdown code {
+  font-size: 0.875em;
+  background: var(--color-green-soft);
+  color: var(--color-green-dark);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+/* Fenced code blocks reuse the dark terminal look of .code-block__body. */
+.markdown pre {
+  background: var(--color-terminal);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  overflow-x: auto;
+  line-height: 1.7;
+}
+
+.markdown pre code {
+  background: none;
+  color: #e2e8f0;
+  padding: 0;
+  font-size: 13.5px;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5em;
+  font-size: 14.5px;
+  /* Wide tables scroll rather than break the layout. */
+  display: block;
+  overflow-x: auto;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid var(--color-line);
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown th {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 24px;
+  margin: 0 0 1em;
+}
+
+.markdown li {
+  margin-bottom: 0.35em;
+}
+
+.markdown blockquote {
+  margin: 0 0 1em;
+  padding: 4px 20px;
+  border-left: 3px solid var(--color-green);
+  background: var(--color-surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.markdown hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 2.5em 0;
+}
+
+.markdown img {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* Anchored headings land below the sticky navbar. */
+.markdown h1[id],
+.markdown h2[id],
+.markdown h3[id],
+.markdown h4[id] {
+  scroll-margin-top: 88px;
+}
+
 /* ---- Misc ------------------------------------------------------------------------------------ */
 
 /* Accessible focus outline for keyboard users. */

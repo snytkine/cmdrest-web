@@ -40,15 +40,13 @@ export function HomePage(): React.JSX.Element {
               >
                 Download {site.name}
               </a>
-              <a
+              <Link
                 className="button button--secondary"
-                href={site.links.documentation}
-                target="_blank"
-                rel="noreferrer"
+                to="/docs"
                 onClick={() => handleCta('docs')}
               >
                 Read the docs
-              </a>
+              </Link>
             </div>
             <div className="hero__platforms" aria-label="Supported platforms">
               <span>macOS</span>

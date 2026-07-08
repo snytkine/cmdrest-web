@@ -11,8 +11,6 @@ export interface SiteLinks {
   readonly releases: string;
   /** GitHub repository with the open-source code. */
   readonly sourceCode: string;
-  /** Project documentation site. */
-  readonly documentation: string;
 }
 
 /** Top-level site metadata used across pages and the HTML head. */
@@ -38,7 +36,6 @@ export const site: SiteMeta = {
   links: {
     releases: 'https://github.com/snytkine/api-tester-cli/releases',
     sourceCode: 'https://github.com/snytkine/api-tester-cli',
-    documentation: 'https://snytkine.github.io/api-tester-cli/test-suite-configuration/',
   },
 };
 
