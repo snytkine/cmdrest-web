@@ -5,9 +5,10 @@
  * - **Markdown** — opens the page's original raw `.md` source in a new
  *   browser tab (built from a Blob of the already-bundled source), so a
  *   reader can view or save the plain markdown.
- * - **PDF** — generates a downloadable PDF of the rendered article
- *   client-side. `html2pdf.js` is loaded lazily (only when the button is
- *   clicked) so it never weighs down the main bundle.
+ * - **PDF** — generates a downloadable, selectable-text PDF of the rendered
+ *   article client-side with pdfmake + html-to-pdfmake, both loaded lazily
+ *   (only when the button is clicked) so they never weigh down the main
+ *   bundle.
  */
 import { useState } from 'react';
 import { getDocSource } from '../docs/render';
@@ -44,11 +45,20 @@ function ToolbarIcon({ children }: { children: React.ReactNode }): React.JSX.Ele
   );
 }
 
+/** Triggers a browser download of a Blob under the given file name. */
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 10_000);
+}
+
 /** Export links (Markdown source + PDF) for a documentation page. */
 export function DocToolbar({ slug, file, title, articleRef }: DocToolbarProps): React.JSX.Element {
-  // `title` is part of the public props for future use (e.g. PDF headers);
-  // reference it so strict unused-parameter checks stay happy.
-  void title;
   const [generating, setGenerating] = useState(false);
 
   /** Opens the raw markdown source in a new browser tab. */
@@ -68,7 +78,7 @@ export function DocToolbar({ slug, file, title, articleRef }: DocToolbarProps): 
     }
   };
 
-  /** Generates and downloads a PDF of the rendered article. */
+  /** Generates and downloads a selectable-text PDF of the rendered article. */
   const handlePdf = async (): Promise<void> => {
     const article = articleRef.current;
     if (article === null || generating) {
@@ -77,19 +87,33 @@ export function DocToolbar({ slug, file, title, articleRef }: DocToolbarProps): 
     logInteraction('doc-export-click', { format: 'pdf', slug });
     setGenerating(true);
     try {
-      // Lazy-loaded so html2pdf (+ jsPDF, html2canvas) stays out of the
-      // main bundle and only downloads when a reader exports a PDF.
-      const { default: html2pdf } = await import('html2pdf.js');
-      await html2pdf()
-        .set({
-          filename: `${slug}.pdf`,
-          margin: [12, 12, 16, 12],
-          image: { type: 'jpeg', quality: 0.95 },
-          html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      // Lazy-loaded so pdfmake (+ fonts) and html-to-pdfmake stay out of
+      // the main bundle and only download when a reader exports a PDF.
+      const [{ default: pdfMake }, { default: vfs }, { default: htmlToPdfmake }] = await Promise.all([
+        import('pdfmake/build/pdfmake'),
+        import('pdfmake/build/vfs_fonts'),
+        import('html-to-pdfmake'),
+      ]);
+      pdfMake.addVirtualFileSystem(vfs);
+
+      // Convert the already-rendered article HTML into pdfmake content.
+      // `imagesByReference` collects <img> sources into a map that pdfmake
+      // resolves, so the docs' screenshots survive into the PDF.
+      const parsed = htmlToPdfmake(article.innerHTML, {
+        window,
+        imagesByReference: true,
+      }) as { content: unknown[]; images?: Record<string, string> };
+
+      const blob = await pdfMake
+        .createPdf({
+          content: parsed.content,
+          images: parsed.images ?? {},
+          pageMargins: [40, 40, 40, 48],
+          defaultStyle: { fontSize: 11, lineHeight: 1.3 },
+          info: { title },
         })
-        .from(article)
-        .save();
+        .getBlob();
+      downloadBlob(blob, `${slug}.pdf`);
     } catch (error: unknown) {
       getLogger('docs').error('doc-pdf-export-failed', { slug, error: String(error) });
     } finally {

@@ -8,19 +8,27 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { DocToolbar } from './DocToolbar';
 import { captureLogs } from '../test/helpers';
 
-// A controllable html2pdf worker so tests can assert on the chained calls
-// and, where needed, hold the `save()` promise open to observe the button's
-// in-flight (disabled) state.
-const { html2pdfMock, worker } = vi.hoisted(() => {
-  const worker = {
-    set: vi.fn(() => worker),
-    from: vi.fn(() => worker),
-    save: vi.fn(() => Promise.resolve()),
+// A controllable pdfmake stack so tests can assert on the conversion +
+// document definition and, where needed, hold the getBlob callback open to
+// observe the button's in-flight (disabled) state.
+const { pdfMakeMock, htmlToPdfmakeMock, createdPdf, addVfs } = vi.hoisted(() => {
+  const createdPdf = {
+    // getBlob resolves with the PDF blob; individual tests override this to
+    // control timing.
+    getBlob: vi.fn(() => Promise.resolve(new Blob(['%PDF'], { type: 'application/pdf' }))),
   };
-  return { html2pdfMock: vi.fn(() => worker), worker };
+  const addVfs = vi.fn();
+  const pdfMakeMock = {
+    addVirtualFileSystem: addVfs,
+    createPdf: vi.fn(() => createdPdf),
+  };
+  const htmlToPdfmakeMock = vi.fn(() => ({ content: [{ text: 'doc' }], images: {} }));
+  return { pdfMakeMock, htmlToPdfmakeMock, createdPdf, addVfs };
 });
 
-vi.mock('html2pdf.js', () => ({ default: html2pdfMock }));
+vi.mock('pdfmake/build/pdfmake', () => ({ default: pdfMakeMock }));
+vi.mock('pdfmake/build/vfs_fonts', () => ({ default: {} }));
+vi.mock('html-to-pdfmake', () => ({ default: htmlToPdfmakeMock }));
 
 /** Builds a ref to a detached article element for the PDF capture target. */
 function articleRef(): React.RefObject<HTMLElement | null> {
@@ -28,11 +36,13 @@ function articleRef(): React.RefObject<HTMLElement | null> {
 }
 
 beforeEach(() => {
-  html2pdfMock.mockClear();
-  worker.set.mockClear();
-  worker.from.mockClear();
-  worker.save.mockClear();
-  worker.save.mockImplementation(() => Promise.resolve());
+  pdfMakeMock.createPdf.mockClear();
+  htmlToPdfmakeMock.mockClear();
+  createdPdf.getBlob.mockClear();
+  addVfs.mockClear();
+  createdPdf.getBlob.mockImplementation(() =>
+    Promise.resolve(new Blob(['%PDF'], { type: 'application/pdf' })),
+  );
   // jsdom does not implement these; stub them so the component can run.
   window.open = vi.fn();
   URL.createObjectURL = vi.fn(() => 'blob:mock-url');
@@ -70,39 +80,53 @@ describe('DocToolbar', () => {
     restore();
   });
 
-  it('lazily generates a PDF named after the slug when PDF is clicked', async () => {
+  it('lazily generates a selectable-text PDF and downloads it named after the slug', async () => {
     const { capture, restore } = captureLogs();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     render(<DocToolbar slug="assertions" file="assertions.md" title="Assertions" articleRef={articleRef()} />);
 
     screen.getByRole('button', { name: /^pdf$/i }).click();
 
     await waitFor(() => {
-      expect(worker.save).toHaveBeenCalledTimes(1);
+      expect(createdPdf.getBlob).toHaveBeenCalledTimes(1);
     });
-    expect(html2pdfMock).toHaveBeenCalledTimes(1);
-    expect(worker.set).toHaveBeenCalledWith(expect.objectContaining({ filename: 'assertions.pdf' }));
+    // The rendered HTML is converted to pdfmake content (real text, not an image).
+    expect(htmlToPdfmakeMock).toHaveBeenCalledTimes(1);
+    expect(pdfMakeMock.createPdf).toHaveBeenCalledWith(
+      expect.objectContaining({ info: { title: 'Assertions' } }),
+    );
+    // The blob is downloaded via an anchor with the slug-based filename.
+    const anchor = clickSpy.mock.instances[0] as HTMLAnchorElement;
+    expect(anchor.download).toBe('assertions.pdf');
+    expect(anchor.href).toBe('blob:mock-url');
     expect(capture.records).toContainEqual(
       expect.objectContaining({ message: 'doc-export-click', data: { format: 'pdf', slug: 'assertions' } }),
     );
+    clickSpy.mockRestore();
     restore();
   });
 
   it('disables the PDF button while a PDF is being generated', async () => {
-    // Hold the save() promise open so the in-flight state is observable.
-    let resolveSave = (): void => {};
-    worker.save.mockImplementation(() => new Promise<void>((resolve) => {
-      resolveSave = resolve;
-    }));
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    // Hold the getBlob promise open so the in-flight state is observable.
+    let finishBlob = (): void => {};
+    createdPdf.getBlob.mockImplementation(
+      () =>
+        new Promise<Blob>((resolve) => {
+          finishBlob = () => {
+            resolve(new Blob(['%PDF'], { type: 'application/pdf' }));
+          };
+        }),
+    );
 
     render(<DocToolbar slug="templating" file="templating.md" title="Templating" articleRef={articleRef()} />);
-    const button = screen.getByRole('button', { name: /^pdf$/i });
-    button.click();
+    screen.getByRole('button', { name: /^pdf$/i }).click();
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /generating/i })).toBeDisabled();
     });
 
-    resolveSave();
+    finishBlob();
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /^pdf$/i })).not.toBeDisabled();
     });
