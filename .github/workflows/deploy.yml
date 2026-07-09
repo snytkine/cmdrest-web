@@ -24,7 +24,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Match the local dev environment (Node 24 / npm 11) that generates
+          # package-lock.json. On Node 20 (npm 10) the resolver picks
+          # different @emnapi wasm optional-dep versions and `npm ci` fails
+          # with a lockfile-out-of-sync error.
+          node-version: 24
           cache: npm
 
       - run: npm ci
