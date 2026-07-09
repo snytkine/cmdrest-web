@@ -22,7 +22,10 @@ const { pdfMakeMock, htmlToPdfmakeMock, createdPdf, addVfs } = vi.hoisted(() => 
     addVirtualFileSystem: addVfs,
     createPdf: vi.fn(() => createdPdf),
   };
-  const htmlToPdfmakeMock = vi.fn(() => ({ content: [{ text: 'doc' }], images: {} }));
+  const htmlToPdfmakeMock = vi.fn((_html: string, _options?: unknown) => ({
+    content: [{ text: 'doc' }],
+    images: {},
+  }));
   return { pdfMakeMock, htmlToPdfmakeMock, createdPdf, addVfs };
 });
 
@@ -104,6 +107,26 @@ describe('DocToolbar', () => {
     );
     clickSpy.mockRestore();
     restore();
+  });
+
+  it('strips element ids so pages with repeated heading anchors export', async () => {
+    // pdfmake requires unique node ids; the CLI reference has several
+    // "Syntax" headings that all render as id="syntax". Duplicate ids must
+    // be removed before conversion or pdfmake throws.
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const ref = articleRef();
+    ref.current!.innerHTML =
+      '<h2 id="syntax">Syntax</h2><p>a</p><h3 id="syntax">Syntax</h3><p>b</p>';
+    render(<DocToolbar slug="cli-reference" file="cli-reference.md" title="CLI Reference" articleRef={ref} />);
+
+    screen.getByRole('button', { name: /^pdf$/i }).click();
+
+    await waitFor(() => {
+      expect(htmlToPdfmakeMock).toHaveBeenCalledTimes(1);
+    });
+    const htmlArg = htmlToPdfmakeMock.mock.calls[0]?.[0] as string;
+    expect(htmlArg).not.toContain('id=');
+    expect(htmlArg).toContain('Syntax');
   });
 
   it('disables the PDF button while a PDF is being generated', async () => {

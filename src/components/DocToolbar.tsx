@@ -96,10 +96,20 @@ export function DocToolbar({ slug, file, title, articleRef }: DocToolbarProps): 
       ]);
       pdfMake.addVirtualFileSystem(vfs);
 
+      // Strip element ids before conversion. Our heading anchors can repeat
+      // across a page (e.g. several "Syntax" sections in the CLI reference),
+      // and html-to-pdfmake carries ids onto pdfmake nodes, which must be
+      // unique — duplicates throw "Node id '...' already exists". We don't
+      // need in-PDF anchors, so removing the ids is the simplest fix.
+      const clone = article.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('[id]').forEach((element) => {
+        element.removeAttribute('id');
+      });
+
       // Convert the already-rendered article HTML into pdfmake content.
       // `imagesByReference` collects <img> sources into a map that pdfmake
       // resolves, so the docs' screenshots survive into the PDF.
-      const parsed = htmlToPdfmake(article.innerHTML, {
+      const parsed = htmlToPdfmake(clone.innerHTML, {
         window,
         imagesByReference: true,
       }) as { content: unknown[]; images?: Record<string, string> };
