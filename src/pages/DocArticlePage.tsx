@@ -6,10 +6,11 @@
  * page). The markdown is loaded and rendered by {@link renderDoc}, which
  * caches the HTML for the rest of the session.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getDocPage } from '../docs/config';
 import { renderDoc } from '../docs/render';
+import { DocToolbar } from '../components/DocToolbar';
 import { NotFoundPage } from './NotFoundPage';
 import { getLogger } from '../logging';
 
@@ -26,6 +27,8 @@ export function DocArticlePage({ slug }: DocArticlePageProps): React.JSX.Element
   const location = useLocation();
   const page = getDocPage(slug ?? params.slug ?? '');
   const [html, setHtml] = useState<string | null>(null);
+  // Target for the PDF export in the toolbar (the rendered article element).
+  const articleRef = useRef<HTMLElement>(null);
 
   // Load (or fetch from the session cache) the rendered document.
   useEffect(() => {
@@ -73,22 +76,24 @@ export function DocArticlePage({ slug }: DocArticlePageProps): React.JSX.Element
     }
   };
 
-  if (html === null) {
-    return (
-      <p className="docs-loading" role="status">
-        Loading…
-      </p>
-    );
-  }
-
   return (
-    <article
-      className="markdown"
-      data-testid={`doc-${page.slug}`}
-      onClick={handleClick}
-      // The HTML is rendered from the site's own bundled markdown files,
-      // not from user input, so injecting it directly is safe.
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <>
+      <DocToolbar slug={page.slug} file={page.file} title={page.title} articleRef={articleRef} />
+      {html === null ? (
+        <p className="docs-loading" role="status">
+          Loading…
+        </p>
+      ) : (
+        <article
+          ref={articleRef}
+          className="markdown"
+          data-testid={`doc-${page.slug}`}
+          onClick={handleClick}
+          // The HTML is rendered from the site's own bundled markdown files,
+          // not from user input, so injecting it directly is safe.
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      )}
+    </>
   );
 }

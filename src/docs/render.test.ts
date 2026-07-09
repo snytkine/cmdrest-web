@@ -4,7 +4,7 @@
  * relies on.
  */
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clearDocCache, getDocCacheSize, renderDoc } from './render';
+import { clearDocCache, getDocCacheSize, getDocSource, renderDoc } from './render';
 import { docPages, docNavItems, getDocPage, getSlugForFile } from './config';
 
 beforeEach(() => {
@@ -68,5 +68,18 @@ describe('renderDoc', () => {
 
   it('rejects files that are not part of the docs directory', async () => {
     await expect(renderDoc('nope.md')).rejects.toThrow(/Unknown documentation file/);
+  });
+});
+
+describe('getDocSource', () => {
+  it('returns the raw, unrendered markdown for a known file', async () => {
+    const raw = await getDocSource('index.md');
+    // Raw markdown still has the heading syntax, unlike the rendered HTML.
+    expect(raw).toMatch(/^#\s/m);
+    expect(raw).not.toContain('<h1');
+  });
+
+  it('rejects files that are not part of the docs directory', async () => {
+    await expect(getDocSource('nope.md')).rejects.toThrow(/Unknown documentation file/);
   });
 });

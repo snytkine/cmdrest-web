@@ -118,6 +118,21 @@ export async function renderDoc(file: string): Promise<string> {
   return html;
 }
 
+/**
+ * Loads the raw, unrendered markdown text of a documentation file. Used by
+ * the docs toolbar to offer the original `.md` source for download/viewing.
+ *
+ * @param file File name relative to `src/docs/`, e.g. `"assertions.md"`.
+ * @throws If the file is not part of the docs directory.
+ */
+export async function getDocSource(file: string): Promise<string> {
+  const load = docSources[`./${file}`];
+  if (load === undefined) {
+    throw new Error(`Unknown documentation file: ${file}`);
+  }
+  return load();
+}
+
 /** Empties the render cache. Intended for tests. */
 export function clearDocCache(): void {
   renderedDocs.clear();

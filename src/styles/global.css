@@ -768,6 +768,48 @@ code {
   color: var(--color-ink-faint);
 }
 
+/* ---- Doc export toolbar (Markdown / PDF links) ------------------------------------------- */
+
+.doc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.doc-toolbar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-card);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.doc-toolbar__link svg {
+  color: var(--color-green);
+}
+
+.doc-toolbar__link:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--color-ink-faint);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.doc-toolbar__link:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
 @media (max-width: 900px) {
   .docs-layout {
     grid-template-columns: 1fr;

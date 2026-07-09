@@ -206,9 +206,19 @@ describe('DocArticlePage', () => {
     );
   });
 
+  it('shows the export toolbar (Markdown + PDF) above the article', async () => {
+    renderWithRouter(<DocArticlePage slug={firstDocPage.slug} />);
+    // The toolbar renders immediately, before the markdown finishes loading.
+    expect(screen.getByRole('button', { name: /markdown/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^pdf$/i })).toBeInTheDocument();
+    await screen.findByTestId(`doc-${firstDocPage.slug}`);
+  });
+
   it('shows the 404 page for an unknown slug', () => {
     renderWithRouter(<DocArticlePage slug="no-such-doc" />);
     expect(screen.getByRole('heading', { name: '404' })).toBeInTheDocument();
+    // No toolbar on the not-found page (there is no markdown source).
+    expect(screen.queryByRole('button', { name: /markdown/i })).not.toBeInTheDocument();
   });
 });
 
