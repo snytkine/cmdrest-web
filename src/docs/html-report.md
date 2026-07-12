@@ -130,7 +130,27 @@ The top of the page shows:
 
 - **Suite name** — from the `name` field of your YAML
 - **Suite description** — from the optional `description` field; omitted when blank
+- **runID** — a unique identifier for this execution of the suite, shown on the line directly
+  above the generated timestamp (see [Run ID](#run-id) below)
 - **Generated timestamp** — local date and time in `yyyy-MM-dd HH:mm` format
+
+#### Run ID
+
+Every time you run a test suite, `api-tester-cli` generates a fresh **runID** — a universally
+unique identifier (UUID) that identifies that single execution instance. A new runID is created
+for each run, so **no two runs ever share the same value**, even when the exact same suite is
+executed repeatedly against the same environment.
+
+The **same runID** is displayed in two places for the same run:
+
+- In the **terminal UI**, on a `Suite runID: <runID>` line inside the banner box at the top of the
+  screen, directly below the `Starting Test Suite <name>` line.
+- In the **HTML report**, on the `runID: <runID>` line in the header, directly above the generated
+  timestamp.
+
+This lets you unambiguously correlate a terminal run with its saved HTML report — if you keep an
+archive of reports, the runID tells you exactly which on-screen execution produced a given file.
+It is also useful for log correlation and referencing a specific execution when reporting issues.
 
 ### Summary statistics
 
