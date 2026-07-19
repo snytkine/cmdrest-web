@@ -17,7 +17,7 @@ The command is `run-suite` with alias `rs`.
 ## Syntax
 
 ```
-rs [--suite=<path>] [--tag=<value>] [--test=<name>] [--ui|--no-ui] [--report=<dir>] [key=value ...]
+rs [--suite=<path>] [--tag=<value>] [--test=<name>] [--ui|--no-ui] [--report=<dir>] [--env-file=<path>] [--allow-scripts] [key=value ...]
 ```
 
 ## Options
@@ -30,6 +30,8 @@ rs [--suite=<path>] [--tag=<value>] [--test=<name>] [--ui|--no-ui] [--report=<di
 | `--no-ui` | No | Force JSON output even when stdout looks like a TTY. |
 | `--ui` | No | Force the interactive terminal UI even when stdout does not look like a TTY. |
 | `--report=<dir>` | No | Absolute path to a directory where the HTML execution report will be written. The filename is auto-generated as `test-suite_<name>_yyyyMMddHHmmss.html`. The directory is created if it does not exist. See [HTML Report](html-report.md). |
+| `--env-file=<path>` | No | Path to an explicit env file supplying the `env` namespace. The file need not be named `.env`. When supplied it **must** point to an existing regular file, otherwise the command aborts with an error. When omitted, the CLI looks for `.env` in the current working directory first, then in the suite file's directory. See [Environment Variables](environment-variables.md). |
+| `--allow-scripts` | No | Permit the suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run. When a suite declares script hooks and neither this flag nor `APITESTER_ALLOW_SCRIPTS=true` is set, the run aborts before any hook or test executes. Web hooks are not gated. |
 
 ## Positional arguments (CLI variables)
 
@@ -60,6 +62,17 @@ Options --tag and --test cannot be used together. Use one or the other.
    - `NO_COLOR` environment variable (disables UI if set)
    - `CI` environment variable (disables UI if set)
    - Terminal width (UI disabled if below 40 columns)
+
+## Exit codes
+
+In non-interactive mode, `run-suite` signals its outcome through the process exit code:
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success — all tests passed (skipped tests do not affect the code) |
+| `1` | One or more test cases failed or errored |
+| `2` | Options / pre-execution validation error (bad arguments, invalid suite, or the [script-hook gate](lifecycle-hooks.md#security-model) not satisfied) |
+| `3` | A fatal `before-all` [lifecycle hook](lifecycle-hooks.md) failed — no test cases ran |
 
 ## Examples
 
@@ -110,6 +123,16 @@ rs --suite=/path/to/suite.yml --report=/path/to/reports
 
 The file is written to `/path/to/reports/test-suite_<suiteName>_<timestamp>.html`. See
 [HTML Execution Report](html-report.md) for the full description of report contents.
+
+### Run the same suite against a specific environment
+```bash
+rs --suite=/path/to/suite.yml --env-file=/path/to/staging.env
+```
+
+The `env` namespace is populated exclusively from `/path/to/staging.env`. Keeping one env file
+per environment (`dev.env`, `staging.env`, `prod.env`) lets you point the same suite at a
+different environment on each invocation. See [Environment Variables](environment-variables.md)
+for the full resolution order.
 
 ---
 

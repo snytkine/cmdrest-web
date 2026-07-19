@@ -53,6 +53,12 @@ The tool automatically detects your environment and chooses an output mode (inte
 | `CI` | If set to any value, disables the interactive UI. Most CI systems (GitHub Actions, GitLab CI, Jenkins, CircleCI, etc.) set this automatically. |
 | `COLUMNS` | Terminal width detection override. Parsed as an integer; defaults to 80 if absent or unparseable. The interactive UI is disabled if the detected width is below 40 columns. |
 
+## Lifecycle hooks
+
+| Variable | Effect |
+|----------|--------|
+| `APITESTER_ALLOW_SCRIPTS` | Set to `true` (case-insensitive) to permit a suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run, equivalent to passing `--allow-scripts`. Read from the OS environment or the suite's `.env` file. When a suite declares script hooks and this is unset (and `--allow-scripts` is not passed), the run aborts before any hook or test executes. |
+
 ### Output mode selection (evaluated in order)
 
 1. If `--ui` flag is supplied → **interactive UI always** (overrides all environment variables)
@@ -89,7 +95,7 @@ docker run \
 
 ## Using `.env` files for secrets
 
-Place a `.env` file in the same directory as your test suite YAML. It will be automatically loaded and merged with environment variables.
+Place a `.env` file next to your test suite YAML (or in your current working directory). It will be automatically loaded and merged with environment variables. You can also point at an explicit file with `--env-file` (see [env-file resolution order](#env-file-resolution-order) below).
 
 **.env file (in suite directory):**
 
@@ -151,3 +157,21 @@ KEY3=value with spaces
 ```
 
 The `dotenv-java` library supports the standard `.env` file format.
+
+### env-file resolution order
+
+The file that supplies the `env` namespace is resolved in the following order:
+
+1. **`--env-file=<path>` supplied** → that exact file is used. It need not be named `.env`, so you can keep per-environment files (`dev.env`, `staging.env`, `prod.env`) and swap them per invocation. If the path does not point to an existing regular file, the command **fails with an error and aborts** — this is the only case where a missing env file is treated as an error, because you asked for a specific file.
+2. **No `--env-file`** → the CLI looks for `.env` in the **current working directory**.
+3. **No `.env` in the current working directory** → the CLI falls back to `.env` in the **directory containing the suite YAML file** (the historical default).
+
+Cases 2 and 3 fail **silently**: if no `.env` is found anywhere, the run proceeds with only the process/system environment variables. As always, system environment variables take precedence over same-named entries in the resolved env file.
+
+**Run the same suite against different environments:**
+
+```bash
+rs --suite=/path/to/suite.yml --env-file=/path/to/dev.env
+rs --suite=/path/to/suite.yml --env-file=/path/to/staging.env
+rs --suite=/path/to/suite.yml --env-file=/path/to/prod.env
+```

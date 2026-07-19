@@ -23,6 +23,14 @@ All four are `Map<String, String>` and are available in template expressions.
 | `suite` | `[[${suite.my_var}]]` | Suite-level `variables` block after resolution. Available **only in test case fields** due to two-pass processing (see below). |
 | `test` | `[[${test.my_var}]]` | Per-test-case `variables` block. Available **only during test execution** when resolving request URLs, headers, and body content. |
 
+## Where templates are resolved
+
+Template expressions work in request URLs, headers, and body content, in assertion values,
+and in [lifecycle hook](lifecycle-hooks.md) fields — a script hook's `path` and `parameters`
+values and a web hook's `url` and `payload` values. The `cli.*`, `env.*`, and `suite.*`
+namespaces are available in every hook; `test.*` is additionally available in `before-each`
+and `after-each` hooks.
+
 ## Two-pass resolution
 
 Template processing happens in two passes so that suite variables can reference CLI and environment variables, and test cases can reference fully-resolved suite variables.

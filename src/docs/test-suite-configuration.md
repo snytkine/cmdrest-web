@@ -12,6 +12,7 @@ A test suite is defined in YAML format with a top-level structure, HTTP request 
 | `rest-clients` | Yes¹ | List | Multiple named HTTP clients, each with an `id` |
 | `variables` | No | Map | Suite-level template variables; supports Thymeleaf expressions |
 | `tests` | **Yes** | List | Ordered list of test cases |
+| `hooks` | No | Object | Lifecycle hooks (scripts or web calls) fired at suite-execution phases. See [Lifecycle Hooks](lifecycle-hooks.md) |
 
 ¹ Exactly one of `rest-client` (singular) or `rest-clients` (plural) must be present.
 Declaring neither — or both — is a validation error.
