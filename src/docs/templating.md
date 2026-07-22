@@ -12,9 +12,9 @@ request_id: "[[${#strings.randomAlphanumeric(12)}]]"
 username: "[[${test.username != null ? test.username : 'guest'}]]"
 ```
 
-## Four variable namespaces
+## Five variable namespaces
 
-All four are `Map<String, String>` and are available in template expressions.
+All five are `Map<String, String>` and are available in template expressions.
 
 | Namespace | Access | Source |
 |-----------|--------|--------|
@@ -22,6 +22,7 @@ All four are `Map<String, String>` and are available in template expressions.
 | `env` | `[[${env.MY_VAR}]]` | Environment variables from the `.env` file (in the suite directory) merged with process environment variables. System environment variables take precedence over `.env` entries with the same name. |
 | `suite` | `[[${suite.my_var}]]` | Suite-level `variables` block after resolution. Available **only in test case fields** due to two-pass processing (see below). |
 | `test` | `[[${test.my_var}]]` | Per-test-case `variables` block. Available **only during test execution** when resolving request URLs, headers, and body content. |
+| `session` | `[[${session.my_var}]]` | Values captured from earlier tests' responses via `saved-session`. Starts empty; populated as tests run. Available **only during test execution**, like `test`. See [Test Chaining](test-chaining.md). |
 
 ## Where templates are resolved
 

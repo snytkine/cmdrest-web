@@ -216,6 +216,9 @@ variables:
 | `variables` | No | Map | Per-test-case key/value pairs available as `[[${test.my_var}]]` |
 | `request` | **Yes** | Object | HTTP request definition |
 | `assertions` | **Yes** | List | One or more assertion definitions to evaluate against the response |
+| `saved-session` | No | List | Captures values from this test's response into the suite-wide `session` namespace. See [Test Chaining](test-chaining.md) |
+| `depends-on` | No | List of strings | Names of other tests that must run (and succeed) before this test. Resolved transitively; each depended-on test runs once per suite run. See [Test Chaining](test-chaining.md) |
+| `transient` | No | Boolean | Default `false`. When `true`, this test runs only as another test's dependency, never standalone, and skips before/after-each hooks. See [Test Chaining](test-chaining.md) |
 
 ## Request definition
 
@@ -404,4 +407,4 @@ tests:
 
 ---
 
-See [Templating](templating.md) to learn how to use the four variable namespaces (`cli`, `env`, `suite`, `test`) and available template utilities.
+See [Templating](templating.md) to learn how to use the five variable namespaces (`cli`, `env`, `suite`, `test`, `session`) and available template utilities, and [Test Chaining](test-chaining.md) for the full `saved-session` / `depends-on` / `transient` reference.

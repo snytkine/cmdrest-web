@@ -9,6 +9,7 @@ The tool runs as a regular JVM application (fast builds, simplest development) o
 - **Thymeleaf templating** — inject command-line values (`[[${cli.api_url}]]`), environment variables (`[[${env.DB_PASSWORD}]]`), suite-level config (`[[${suite.base_url}]]`), and per-test variables (`[[${test.username}]]`) into any YAML string
 - **25+ assertion types** — validate status codes, response headers, body content (with JSONPath and JSON Schema), array elements, null checks, numeric ranges, regex patterns, and more
 - **Lifecycle hooks** — run local scripts or outbound web calls at suite-execution phases (before/after all, before/after each test, and around report generation); see [Lifecycle Hooks](hooks.md)
+- **Test chaining** — capture values from a response into a suite-wide `session` namespace with `saved-session`, then order and reuse them across tests with `depends-on` and `transient`; see [Test Chaining](test-chaining.md)
 - **Tag and test filtering** — run only tests tagged with `--tag smoke` or a single test by name with `--test="My Test"`
 - **Interactive terminal UI** — real-time test progress with colour-coded pass/fail indicators (or JSON output for CI)
 - **Environment file support** — store secrets in a `.env` file; values are securely merged with command-line variables
