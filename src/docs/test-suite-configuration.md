@@ -33,6 +33,7 @@ always the default client used by every request.
 | `connect-timeout` | Integer | `30000` | Connection timeout in milliseconds. |
 | `headers` | Map | (none) | Default HTTP headers sent with every request. Per-test headers take precedence for same-named keys. |
 | `auth` | Object | (none) | Optional HTTP Basic Auth applied as default to all requests in the suite. See "Authentication" section below. |
+| `ssl` | Object | (none) | Optional custom SSL/TLS settings — skip certificate validation, a custom truststore, and/or a client keystore for mutual TLS. See [Custom SSL Certificates](custom-ssl-certificates.md). |
 
 ```yaml
 rest-client:

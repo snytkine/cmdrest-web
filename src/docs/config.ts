@@ -29,6 +29,7 @@ export const docPages: readonly DocPageConfig[] = [
   firstDocPage,
   { slug: 'getting-started', title: 'Getting Started', file: 'getting-started.md' },
   { slug: 'test-suite-configuration', title: 'Test Suite Configuration', file: 'test-suite-configuration.md' },
+  { slug: 'custom-ssl-certificates', title: 'Custom SSL Certificates', file: 'custom-ssl-certificates.md' },
   { slug: 'test-chaining', title: 'Test Chaining', file: 'test-chaining.md' },
   { slug: 'lifecycle-hooks', title: 'Lifecycle Hooks', file: 'hooks.md' },
   { slug: 'assertions', title: 'Assertions', file: 'assertions.md' },
