@@ -2,6 +2,39 @@
 
 Assertions are evaluated after the HTTP response is received. Each test must include at least one assertion. When an assertion fails, the test is marked as failed, but execution continues to evaluate all assertions (soft assertions).
 
+## The implicit `base_server_response` assertion
+
+> ✅ **Every request is checked for a response, whether you ask for it or not.** On top of the
+> assertions you declare, every test case runs one built-in assertion named `base_server_response`.
+> You never write it in your YAML — it is added automatically to every test in every suite.
+
+`base_server_response` verifies one thing: the request reached the service and *some* HTTP response came back before the client's timeout elapsed. Nothing about that response is inspected — status code, headers and body are all irrelevant, so a `500 Internal Server Error` passes it exactly like a `200 OK`.
+
+It fails only when no response is obtained at all:
+
+- the connection was refused (nothing listening on the host/port),
+- the host name could not be resolved,
+- the TLS handshake failed,
+- the connection timed out.
+
+In that case the test is reported as **failed** — not errored — with this one failure, because none of the assertions you declared could be evaluated:
+
+| Column | Value |
+|--------|-------|
+| Assertion | `base_server_response` |
+| Expected | `service must respond within default timeout of 30 seconds` |
+| Actual | `no response received: <transport error>` |
+
+The timeout named in the *Expected* text is the `connect-timeout` of the rest-client that dispatched the request, expressed in seconds. It is 30 seconds unless the suite sets `connect-timeout` explicitly:
+
+```yaml
+rest-client:
+  base-url: "https://api.example.com"
+  connect-timeout: 5000    # reported as "...default timeout of 5 seconds"
+```
+
+Because this assertion is always evaluated, the assertion counts shown in the terminal UI and in the HTML report are one higher than the number of assertions declared in the YAML — a test declaring two assertions reports `3 passed`.
+
 ## Path syntax.
 
 Most assertions reference a location in the response using a `path` field. Paths start with `response.`:
