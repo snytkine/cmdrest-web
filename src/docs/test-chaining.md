@@ -248,6 +248,11 @@ Transient tests also **do not fire `before-each` / `after-each`
 [hooks](lifecycle-hooks.md)** — those hooks fire for the dependent (non-transient) test
 that triggered the transient test's execution.
 
+A setup step like this often has nothing worth asserting beyond "the call worked". Since
+the `assertions` list is [optional](assertions.md), you can leave it off entirely: the
+implicit `base_server_response` assertion still fails the test — and, through failure
+propagation, every test that depends on it — when the service returns no response.
+
 ## Summary
 
 | Field | On | Type | Purpose |

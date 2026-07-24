@@ -1,6 +1,8 @@
 # Assertions
 
-Assertions are evaluated after the HTTP response is received. Each test must include at least one assertion. When an assertion fails, the test is marked as failed, but execution continues to evaluate all assertions (soft assertions).
+Assertions are evaluated after the HTTP response is received. When an assertion fails, the test is marked as failed, but execution continues to evaluate all assertions (soft assertions).
+
+The `assertions` list is **optional**. A test may omit it entirely (or declare `assertions: []`) and is then verified solely by the implicit `base_server_response` assertion described below — useful for a test that exists only as a `depends-on` parent, or one kept in the suite to be fired manually.
 
 ## The implicit `base_server_response` assertion
 

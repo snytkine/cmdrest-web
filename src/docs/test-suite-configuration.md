@@ -216,7 +216,7 @@ variables:
 | `skip` | No | String | When non-blank, the test is skipped and this value is recorded as the skip reason. Supports Thymeleaf. |
 | `variables` | No | Map | Per-test-case key/value pairs available as `[[${test.my_var}]]` |
 | `request` | **Yes** | Object | HTTP request definition |
-| `assertions` | **Yes** | List | One or more assertion definitions to evaluate against the response |
+| `assertions` | No | List | Assertion definitions to evaluate against the response. May be omitted or empty — the test is then verified by the implicit `base_server_response` assertion alone. See [Assertions](assertions.md) |
 | `saved-session` | No | List | Captures values from this test's response into the suite-wide `session` namespace. See [Test Chaining](test-chaining.md) |
 | `depends-on` | No | List of strings | Names of other tests that must run (and succeed) before this test. Resolved transitively; each depended-on test runs once per suite run. See [Test Chaining](test-chaining.md) |
 | `transient` | No | Boolean | Default `false`. When `true`, this test runs only as another test's dependency, never standalone, and skips before/after-each hooks. See [Test Chaining](test-chaining.md) |
@@ -297,7 +297,7 @@ The file content is processed as a Thymeleaf template, so expressions like `[[${
 
 ## Assertions
 
-A test must include at least one assertion. Assertions are evaluated after the HTTP response is received.
+Assertions are evaluated after the HTTP response is received. The list is optional: a test that declares none still runs, verified by the implicit `base_server_response` assertion that checks the service answered at all.
 
 ```yaml
 assertions:
