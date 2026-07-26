@@ -35,6 +35,15 @@ always the default client used by every request.
 | `auth` | Object | (none) | Optional HTTP Basic Auth applied as default to all requests in the suite. See "Authentication" section below. |
 | `ssl` | Object | (none) | Optional custom SSL/TLS settings — skip certificate validation, a custom truststore, and/or a client keystore for mutual TLS. See [Custom SSL Certificates](custom-ssl-certificates.md). |
 | `follow-redirects` | Boolean | `true` | Whether to follow HTTP redirect (3xx) responses. Set to `false` to make the 3xx response itself visible to assertions. Available only on the rest-client, not on individual tests. See [Handling HTTP Redirects](handling-http-redirects.md). |
+| `proxy` | Object or `false` | (none) | Optional HTTP proxy for this client's requests. Omit the key to inherit an `HTTP_PROXY` / `HTTPS_PROXY` environment proxy automatically; set to `false` to opt out of proxying entirely, even when those variables are set. See [Requests Through a Proxy](requests-through-a-proxy.md). |
+
+#### `proxy` object fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `url` | String | yes | Proxy URL as `http://host[:port]`; port defaults to `80`. Must use the `http` scheme — a `https://` proxy URL is rejected, because the client connects to the proxy in plaintext and tunnels the endpoint's TLS through it with `CONNECT`. |
+| `username` | String | no | Username for proxies requiring Basic authentication. Only Basic is supported. |
+| `password` | String | no | Password. Only allowed when `username` is also set. **Never write a literal value here** — use `[[${env.PROXY_PASSWORD}]]`. |
 
 ```yaml
 rest-client:

@@ -59,6 +59,36 @@ The tool automatically detects your environment and chooses an output mode (inte
 |----------|--------|
 | `APITESTER_ALLOW_SCRIPTS` | Set to `true` (case-insensitive) to permit a suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run, equivalent to passing `--allow-scripts`. Read from the OS environment or the suite's `.env` file. When a suite declares script hooks and this is unset (and `--allow-scripts` is not passed), the run aborts before any hook or test executes. |
 
+## HTTP proxy
+
+All three are read from the OS environment or the suite's `.env` file. See
+[Requests Through a Proxy](requests-through-a-proxy.md) for the full picture.
+
+| Variable | Effect |
+|----------|--------|
+| `HTTP_PROXY` | Proxy used for `http://` targets, as `http://host[:port]`. May embed credentials (`http://user:pass@host:port`). Applies **automatically** to any rest-client that does not declare a `proxy` key — no opt-in flag needed. The lowercase `http_proxy` is also accepted; uppercase wins if both are set. |
+| `HTTPS_PROXY` | Same, for `https://` targets. Note this names the proxy used *for TLS destinations* — the proxy URL itself is still `http://`, because the client connects to the proxy in plaintext and tunnels the endpoint's TLS through it with `CONNECT`. The lowercase `https_proxy` is also accepted. |
+| `PROXY_USE_ENV` | Set to `true` (case-insensitive) so that `HTTP_PROXY` / `HTTPS_PROXY` **override** a `proxy` object declared on a rest-client. Not needed for the variables to work at all — only to resolve a conflict. The override is all-or-nothing: the YAML block is discarded entirely, credentials included. |
+
+A rest-client that declares `proxy: false` ignores all three; that opt-out cannot be overridden.
+
+### Keeping proxy credentials out of your suite
+
+Proxy credentials belong in the environment, never in a committed test-suite file:
+
+```bash
+# .env
+PROXY_USER=jsmith
+PROXY_PASSWORD=s3cr3t
+```
+
+```yaml
+proxy:
+  url: "http://proxy.mycompany.com:8080"
+  username: "[[${env.PROXY_USER}]]"
+  password: "[[${env.PROXY_PASSWORD}]]"
+```
+
 ### Output mode selection (evaluated in order)
 
 1. If `--ui` flag is supplied → **interactive UI always** (overrides all environment variables)

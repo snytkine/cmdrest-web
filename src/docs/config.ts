@@ -31,6 +31,7 @@ export const docPages: readonly DocPageConfig[] = [
   { slug: 'test-suite-configuration', title: 'Test Suite Configuration', file: 'test-suite-configuration.md' },
   { slug: 'custom-ssl-certificates', title: 'Custom SSL Certificates', file: 'custom-ssl-certificates.md' },
   { slug: 'handling-http-redirects', title: 'Handling HTTP Redirects', file: 'handling-http-redirects.md' },
+  { slug: 'requests-through-a-proxy', title: 'Requests Through a Proxy', file: 'requests-through-a-proxy.md' },
   { slug: 'test-chaining', title: 'Test Chaining', file: 'test-chaining.md' },
   { slug: 'lifecycle-hooks', title: 'Lifecycle Hooks', file: 'hooks.md' },
   { slug: 'assertions', title: 'Assertions', file: 'assertions.md' },
