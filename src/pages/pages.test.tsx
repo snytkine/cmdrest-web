@@ -1,7 +1,8 @@
 /**
- * Tests for the four content pages. The Matrix rain scene is mocked
- * out: jsdom has no canvas 2D context, and the scene's own logic is
- * covered by `matrixRain.test.ts` and `MatrixScene.test.tsx`.
+ * Tests for the four content pages. The canvas scenes are mocked out:
+ * jsdom has no canvas 2D context, and their own logic is covered by
+ * `matrixRain.test.ts` / `MatrixScene.test.tsx` and
+ * `wordRain.test.ts` / `WordRainScene.test.tsx`.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
@@ -19,9 +20,13 @@ import { docNavItems, firstDocPage } from '../docs/config';
 import { renderWithRouter, captureLogs } from '../test/helpers';
 import type { CaptureTransport } from '../test/helpers';
 
-// Replace the canvas animation with a lightweight placeholder.
+// Replace the canvas animations with lightweight placeholders.
 vi.mock('../matrix/MatrixScene', () => ({
   MatrixScene: () => <div data-testid="matrix-scene-mock" />,
+}));
+
+vi.mock('../wordrain/WordRainScene', () => ({
+  WordRainScene: () => <div data-testid="wordrain-scene-mock" />,
 }));
 
 /**

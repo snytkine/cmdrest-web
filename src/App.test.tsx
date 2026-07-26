@@ -9,11 +9,15 @@ import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import { renderWithRouter, captureLogs } from './test/helpers';
 
-// The Matrix rain scene needs a canvas 2D context that jsdom cannot
-// provide; it is unit-tested separately in matrixRain.test.ts and
-// MatrixScene.test.tsx.
+// The canvas scenes need a 2D context that jsdom cannot provide; they
+// are unit-tested separately in matrixRain.test.ts / MatrixScene.test.tsx
+// and wordRain.test.ts / WordRainScene.test.tsx.
 vi.mock('./matrix/MatrixScene', () => ({
   MatrixScene: () => <div data-testid="matrix-scene-mock" />,
+}));
+
+vi.mock('./wordrain/WordRainScene', () => ({
+  WordRainScene: () => <div data-testid="wordrain-scene-mock" />,
 }));
 
 /** Restore function of the log capture installed per-test. */

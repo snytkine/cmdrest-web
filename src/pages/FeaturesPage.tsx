@@ -5,6 +5,7 @@
  */
 import { groupFeaturesByCategory } from '../content/features';
 import { FeatureCard } from '../components/FeatureCard';
+import { WordRainScene } from '../wordrain/WordRainScene';
 
 /** The full features listing page. */
 export function FeaturesPage(): React.JSX.Element {
@@ -25,6 +26,11 @@ export function FeaturesPage(): React.JSX.Element {
 
       <section className="section">
         <div className="container">
+          {/* Animated strip: the request → response → assertions → report
+              story, spelled out of falling characters. */}
+          <div className="wordrain-strip">
+            <WordRainScene />
+          </div>
           {/* One section per category, preserving content declaration order. */}
           {[...grouped.entries()].map(([category, categoryFeatures]) => (
             <div className="feature-category" key={category}>
