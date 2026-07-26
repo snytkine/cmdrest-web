@@ -39,8 +39,8 @@ describe('site metadata', () => {
 });
 
 describe('features catalogue', () => {
-  it('contains all 17 advertised features', () => {
-    expect(features).toHaveLength(17);
+  it('contains all 18 advertised features', () => {
+    expect(features).toHaveLength(18);
   });
 
   it('has unique, non-empty ids', () => {

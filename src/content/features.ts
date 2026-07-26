@@ -32,7 +32,8 @@ export type FeatureIconName =
   | 'lock'
   | 'script'
   | 'braces'
-  | 'env';
+  | 'env'
+  | 'proxy';
 
 /** A single product feature rendered as a card. */
 export interface Feature {
@@ -193,6 +194,14 @@ export const features: readonly Feature[] = [
       'Keep parameters and secrets out of your suite with external .env files loaded at runtime.',
     icon: 'env',
     category: 'Authoring',
+  },
+  {
+    id: 'proxy',
+    title: 'Requests Through a Proxy',
+    description:
+      'Optionally route requests through a corporate HTTP proxy, with authentication, HTTP_PROXY support and per-client opt-out.',
+    icon: 'proxy',
+    category: 'Flexibility',
   },
 ];
 
