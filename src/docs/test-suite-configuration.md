@@ -34,6 +34,7 @@ always the default client used by every request.
 | `headers` | Map | (none) | Default HTTP headers sent with every request. Per-test headers take precedence for same-named keys. |
 | `auth` | Object | (none) | Optional HTTP Basic Auth applied as default to all requests in the suite. See "Authentication" section below. |
 | `ssl` | Object | (none) | Optional custom SSL/TLS settings — skip certificate validation, a custom truststore, and/or a client keystore for mutual TLS. See [Custom SSL Certificates](custom-ssl-certificates.md). |
+| `follow-redirects` | Boolean | `true` | Whether to follow HTTP redirect (3xx) responses. Set to `false` to make the 3xx response itself visible to assertions. Available only on the rest-client, not on individual tests. See [Handling HTTP Redirects](handling-http-redirects.md). |
 
 ```yaml
 rest-client:
