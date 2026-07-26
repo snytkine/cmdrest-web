@@ -32,8 +32,37 @@ rs --suite=/path/to/suite.yml --report=/path/to/reports
 After the run completes, the CLI prints a confirmation line:
 
 ```
-Report written to /path/to/reports/test-suite_My_Suite_20260606142300.html
+Report written to file:///path/to/reports/test-suite_My_Suite_20260606142300.html
 ```
+
+### Opening the report from the terminal
+
+When the interactive terminal UI is active, the report path is emitted as an
+[OSC 8 hyperlink](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda). Terminals
+that support the sequence render it as a clickable link that opens the report in your default
+browser:
+
+- **macOS** — Cmd-click
+- **Linux / Windows** — Ctrl-click
+
+OSC 8 is supported by iTerm2, WezTerm, kitty, GNOME Terminal, Konsole, Windows Terminal, and foot.
+Terminals that do not support it — notably macOS Terminal.app — ignore the sequence and display the
+plain `file://` URI instead, which you can still copy and paste into a browser.
+
+The `file://` URI is built with the platform's native path conventions and percent-encodes
+characters such as spaces, so report directories with spaces in their names produce valid,
+clickable links. On Windows the URI takes the form `file:///C:/path/to/report.html`.
+
+Two caveats worth knowing:
+
+- Some editors' integrated terminals (VS Code, for example) open local files in the editor rather
+  than in a browser, so the report may appear as HTML source.
+- Over an SSH session the `file://` URI refers to a path on the **remote** machine, so the link will
+  not resolve on the computer you are sitting at. Copy the report off the remote host instead.
+
+Escape sequences are only emitted when output goes to an interactive terminal. With `--no-ui`, in
+CI, when the `NO_COLOR` environment variable is set, or when stdout is piped or redirected, the
+report path is printed as a plain absolute path so that captured output is never corrupted.
 
 ### Filename format
 
