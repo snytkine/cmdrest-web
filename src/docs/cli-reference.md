@@ -31,7 +31,7 @@ rs [--suite=<path>] [--tag=<value>] [--test=<name>] [--ui|--no-ui] [--report=<di
 | `--ui` | No | Force the interactive terminal UI even when stdout does not look like a TTY. |
 | `--report=<dir>` | No | Absolute path to a directory where the HTML execution report will be written. The filename is auto-generated as `test-suite_<name>_yyyyMMddHHmmss.html`. The directory is created if it does not exist. See [HTML Report](html-report.md). |
 | `--env-file=<path>` | No | Path to an explicit env file supplying the `env` namespace. The file need not be named `.env`. When supplied it **must** point to an existing regular file, otherwise the command aborts with an error. When omitted, the CLI looks for `.env` in the current working directory first, then in the suite file's directory. See [Environment Variables](environment-variables.md). |
-| `--allow-scripts` | No | Permit the suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run. When a suite declares script hooks and neither this flag nor `APITESTER_ALLOW_SCRIPTS=true` is set, the run aborts before any hook or test executes. Web hooks are not gated. |
+| `--allow-scripts` | No | Permit the suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run. When a suite declares script hooks and neither this flag nor `CMDREST_ALLOW_SCRIPTS=true` is set, the run aborts before any hook or test executes. Web hooks are not gated. |
 
 ## Positional arguments (CLI variables)
 
@@ -203,5 +203,5 @@ version
 Output:
 
 ```
-Api Tester CLI version 0.2.1
+CmdRest version 0.2.1
 ```

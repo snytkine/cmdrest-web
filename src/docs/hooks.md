@@ -159,7 +159,7 @@ Script hooks run arbitrary commands as the invoking user, so they are protected 
 mandatory opt-in gate and several hardening rules:
 
 1. **Opt-in gate.** Script hooks run only when you pass `--allow-scripts` to `run-suite`
-   **or** set `APITESTER_ALLOW_SCRIPTS=true` (case-insensitive) in the OS environment or
+   **or** set `CMDREST_ALLOW_SCRIPTS=true` (case-insensitive) in the OS environment or
    the suite's `.env`. If a suite declares script hooks and neither is set, the run aborts
    before any hook or test executes. Web hooks are not gated (they cannot execute local
    code).
@@ -185,5 +185,5 @@ mandatory opt-in gate and several hardening rules:
 ## See also
 
 - [CLI Reference](cli-reference.md) — the `--allow-scripts` flag and exit codes
-- [Environment Variables](environment-variables.md) — `APITESTER_ALLOW_SCRIPTS`
+- [Environment Variables](environment-variables.md) — `CMDREST_ALLOW_SCRIPTS`
 - [Test Suite Configuration](test-suite-configuration.md) — the full suite structure

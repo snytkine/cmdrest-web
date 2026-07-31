@@ -37,7 +37,7 @@ java -jar target/api-tester-cli-0.0.1-SNAPSHOT.jar version
 ```
 
 ```
-Api Tester CLI version 0.2.1
+CmdRest version 0.2.1
 ```
 
 See the [CLI Reference](cli-reference.md) for the full list of commands.

@@ -57,7 +57,7 @@ The tool automatically detects your environment and chooses an output mode (inte
 
 | Variable | Effect |
 |----------|--------|
-| `APITESTER_ALLOW_SCRIPTS` | Set to `true` (case-insensitive) to permit a suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run, equivalent to passing `--allow-scripts`. Read from the OS environment or the suite's `.env` file. When a suite declares script hooks and this is unset (and `--allow-scripts` is not passed), the run aborts before any hook or test executes. |
+| `CMDREST_ALLOW_SCRIPTS` | Set to `true` (case-insensitive) to permit a suite's **script** [lifecycle hooks](lifecycle-hooks.md) to run, equivalent to passing `--allow-scripts`. Read from the OS environment or the suite's `.env` file. When a suite declares script hooks and this is unset (and `--allow-scripts` is not passed), the run aborts before any hook or test executes. |
 
 ## HTTP proxy
 
