@@ -60,7 +60,9 @@ describe('WordRainScene', () => {
   it('renders an accessible canvas at the configured height', () => {
     render(<WordRainScene />);
     const canvas = screen.getByTestId('wordrain-scene');
-    expect(canvas).toHaveAccessibleName(/Request, Response, Assertions, Report/);
+    expect(canvas).toHaveAccessibleName(
+      new RegExp(wordRainSettings.words.join(', ')),
+    );
     expect(canvas).toHaveStyle({ height: `${wordRainSettings.height}px` });
   });
 
