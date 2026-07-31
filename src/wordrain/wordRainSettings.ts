@@ -61,7 +61,7 @@ export const wordRainSettings: WordRainSettings = {
    * Only characters present in the bitmap font in `glyphFont.ts`
    * (A–Z, a–z, 0–9 and space) may be used.
    */
-  words: ['REQUEST', 'RESPONSE', 'ASSERTIONS', 'REPORT'],
+  words: ['REQUEST', 'RESPONSE', 'TESTS', 'REPORT'],
 
   /** Seconds of pure character field before the first word appears. */
   introSeconds: 0.5,
@@ -70,13 +70,13 @@ export const wordRainSettings: WordRainSettings = {
    * Seconds between the starts of consecutive words. Shorter than one
    * word's full cycle below, so words briefly overlap as they hand over.
    */
-  wordIntervalSeconds: 1,
+  wordIntervalSeconds: 1.40,
 
   /** How long (seconds, at speed 1) each phase of one word lasts. */
   phases: {
     form: 0.35,
-    hold: 0.95,
-    dissolve: 0.35,
+    hold: 1.30,
+    dissolve: 0.15,
   },
 
   /**
@@ -84,5 +84,5 @@ export const wordRainSettings: WordRainSettings = {
    * Negative loops forever; a positive number plays that many passes
    * and then freezes with the last word lit.
    */
-  loopAnimation: -1,
+  loopAnimation: 3,
 };

@@ -158,9 +158,21 @@ export function computeCellSize(
  * Left edge (in cells) of each word's slot, spread evenly across the
  * grid so the first word sits at the left and the last at the right.
  *
- * All words share one travel range — derived from the *widest* mask —
- * which keeps the slots evenly spaced and strictly ordered whatever mix
- * of long and short words is configured.
+ * Each word is placed by *alignment fraction* rather than by a shared
+ * offset: the first word is flush against the left margin, the last is
+ * flush against the right margin, and the ones in between sit at evenly
+ * spaced fractions of their own travel range. Because a word's range
+ * depends on its own width, a narrow word simply travels further than a
+ * wide one — which is what keeps both ends of the strip equally filled
+ * whatever mix of long and short words is configured. (Deriving one
+ * range from the widest mask instead would strand a narrow last word
+ * `widest - own width` cells short of the right margin.)
+ *
+ * Slots never step backwards: on a strip so narrow that a word has
+ * almost no room to travel, its ideal position can fall left of its
+ * predecessor's, so it is held at the predecessor's edge instead — but
+ * only as far as the grid allows, since staying on screen matters more
+ * than the ordering in that case.
  */
 export function computeWordSlots(
   masks: readonly WordMask[],
@@ -170,16 +182,22 @@ export function computeWordSlots(
   if (masks.length === 0) {
     return [];
   }
-  const widest = masks.reduce((max, mask) => Math.max(max, mask.columns), 0);
-  const span = Math.max(0, columns - 2 * margin - widest);
+  let previous = 0;
   return masks.map((mask, index) => {
+    // How far this word can slide between the two margins. A narrow
+    // word travels further than a wide one, which is what lets both the
+    // first and the last word finish flush against their margin.
+    const span = Math.max(0, columns - 2 * margin - mask.columns);
     const offset =
       masks.length === 1
-        ? Math.floor(span / 2)
+        ? // A lone word reads best centered rather than pinned left.
+          Math.floor(span / 2)
         : Math.round((span * index) / (masks.length - 1));
     // Clamp so a word wider than the grid still starts on screen.
     const limit = Math.max(0, columns - mask.columns);
-    return Math.max(0, Math.min(margin + offset, limit));
+    const left = Math.max(0, Math.min(Math.max(margin + offset, previous), limit));
+    previous = left;
+    return left;
   });
 }
 

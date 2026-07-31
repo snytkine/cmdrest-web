@@ -16,6 +16,7 @@ import {
   FIELD_CHARS,
   FIELD_LIGHT_RATIO,
   MIN_CELL_SIZE,
+  SLOT_MARGIN,
   cellFlickerSalt,
   computeCellSize,
   computeWordRow,
@@ -189,6 +190,51 @@ describe('grid layout', () => {
       expect(slot).toBeGreaterThan(previous);
       previous = slot;
       expect(slot + (masks[index]?.columns ?? 0)).toBeLessThanOrEqual(154);
+    });
+  });
+
+  it('lands the first and last word flush against their margins', () => {
+    // Regression: when every word shared one travel range derived from
+    // the widest mask, a narrow last word ("REPORT", 35 cells) stopped
+    // where the widest one ("ASSERTIONS", 59 cells) would have started,
+    // stranding 24 cells of dead space before the right edge.
+    const masks = wordRainSettings.words.map(buildWordMask);
+    const columns = 154;
+    const slots = computeWordSlots(masks, columns, SLOT_MARGIN);
+    const last = masks[masks.length - 1];
+    const leftGap = slots[0] ?? 0;
+    const rightGap = columns - ((slots[slots.length - 1] ?? 0) + (last?.columns ?? 0));
+    expect(leftGap).toBe(SLOT_MARGIN);
+    expect(rightGap).toBe(SLOT_MARGIN);
+  });
+
+  it('spaces the alignment fractions evenly across the words', () => {
+    // Each word sits at index / (count - 1) of its own travel range, so
+    // the fractions come out as an even 0, 1/3, 2/3, 1 progression even
+    // though the words differ in width.
+    const masks = wordRainSettings.words.map(buildWordMask);
+    const columns = 154;
+    const slots = computeWordSlots(masks, columns, SLOT_MARGIN);
+    slots.forEach((slot, index) => {
+      const span = columns - 2 * SLOT_MARGIN - (masks[index]?.columns ?? 0);
+      const fraction = (slot - SLOT_MARGIN) / span;
+      expect(fraction).toBeCloseTo(index / (masks.length - 1), 1);
+    });
+  });
+
+  it('never steps backwards on a strip too narrow for the widest word', () => {
+    // "Assertions" (59 cells) nearly fills a 66-column grid, so its
+    // ideal slot falls left of the previous word's; it is held at that
+    // word's edge instead of sliding back up the strip.
+    const masks = ['Req', 'Response', 'Assertions', 'Report'].map(buildWordMask);
+    const columns = 66;
+    const slots = computeWordSlots(masks, columns, SLOT_MARGIN);
+    let previous = -1;
+    slots.forEach((slot, index) => {
+      expect(slot).toBeGreaterThanOrEqual(previous);
+      previous = slot;
+      // Still fully on screen.
+      expect(slot + (masks[index]?.columns ?? 0)).toBeLessThanOrEqual(columns);
     });
   });
 
