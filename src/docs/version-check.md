@@ -26,8 +26,8 @@ All settings live in `application.properties` under the `apitester.version-check
 
 ```properties
 apitester.version-check.enabled=true
-apitester.version-check.url=https://api.github.com/repos/snytkine/api-tester-cli/releases/latest
-apitester.version-check.upgrade-page-url=https://github.com/snytkine/api-tester-cli/releases/latest
+apitester.version-check.url=https://api.github.com/repos/snytkine/cmd-rest/releases/latest
+apitester.version-check.upgrade-page-url=https://github.com/snytkine/cmd-rest/releases/latest
 apitester.version-check.timeout-seconds=10
 apitester.version-check.max-retries=3
 apitester.version-check.retry-interval-seconds=5

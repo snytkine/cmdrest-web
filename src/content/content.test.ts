@@ -25,8 +25,8 @@ describe('site metadata', () => {
   });
 
   it('points at the expected GitHub project', () => {
-    expect(site.links.sourceCode).toBe('https://github.com/snytkine/api-tester-cli');
-    expect(site.links.releases).toBe('https://github.com/snytkine/api-tester-cli/releases');
+    expect(site.links.sourceCode).toBe('https://github.com/snytkine/cmd-rest');
+    expect(site.links.releases).toBe('https://github.com/snytkine/cmd-rest/releases');
   });
 
   it('declares navigation items whose paths are absolute', () => {

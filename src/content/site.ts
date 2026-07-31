@@ -34,8 +34,8 @@ export const site: SiteMeta = {
     'on macOS, Windows or Linux — no runtime to install, instant startup, ' +
     'and vibrant HTML reports when you are done.',
   links: {
-    releases: 'https://github.com/snytkine/api-tester-cli/releases',
-    sourceCode: 'https://github.com/snytkine/api-tester-cli',
+    releases: 'https://github.com/snytkine/cmd-rest/releases',
+    sourceCode: 'https://github.com/snytkine/cmd-rest',
   },
 };
 

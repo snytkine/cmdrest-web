@@ -14,8 +14,8 @@
 Clone the repository and build:
 
 ```bash
-git clone https://github.com/snytkine/api-tester-cli.git
-cd api-tester-cli
+git clone https://github.com/snytkine/cmd-rest.git
+cd cmd-rest
 
 # JVM build (recommended for development — fast, instant startup after build)
 ./mvnw clean package
