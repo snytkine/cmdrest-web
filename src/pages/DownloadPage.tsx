@@ -6,6 +6,7 @@ import { downloadTargets } from '../content/downloads';
 import type { OsId } from '../content/downloads';
 import { site } from '../content/site';
 import { logInteraction } from '../logging';
+import { CodeBlock } from '../components/CodeBlock';
 
 /** Simple line-art icons for each operating system. */
 const OS_ICONS: Record<OsId, React.JSX.Element> = {
@@ -70,6 +71,42 @@ export function DownloadPage(): React.JSX.Element {
                 </a>
               </div>
             ))}
+          </div>
+
+          <div className="notice" data-testid="macos-notice">
+            <p>Important — macOS users</p>
+            <p>
+              The macOS binaries are not signed with an Apple developer certificate, so macOS
+              will refuse to run them right after download (&quot;cannot be opened because the
+              developer cannot be verified&quot;). Clear the quarantine flag first:
+            </p>
+            <CodeBlock
+              title="Terminal"
+              code={[
+                '# Intel Mac',
+                'xattr -d com.apple.quarantine ~/Downloads/cmd-rest-macos-intelx86',
+                '',
+                '# Apple Silicon Mac (default on newer Macs)',
+                'xattr -d com.apple.quarantine ~/Downloads/cmd-rest-macos-aarch64',
+              ].join('\n')}
+            />
+            <p>
+              Then move the binary into <code>/usr/local/bin</code>, rename it to{' '}
+              <code>cmd-rest</code>, and make it executable. This step needs <code>sudo</code>{' '}
+              because <code>/usr/local/bin</code> is owned by root:
+            </p>
+            <CodeBlock
+              title="Terminal"
+              code={[
+                '# Replace the filename below with the one you downloaded',
+                'sudo mv ~/Downloads/cmd-rest-macos-aarch64 /usr/local/bin/cmd-rest',
+                'sudo chmod +x /usr/local/bin/cmd-rest',
+              ].join('\n')}
+            />
+            <p>
+              Once moved, the <code>cmd-rest</code> command is available from any directory in
+              the macOS terminal.
+            </p>
           </div>
 
           <p style={{ textAlign: 'center' }}>

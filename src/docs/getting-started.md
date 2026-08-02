@@ -1,5 +1,46 @@
 # Getting Started
 
+There are two ways to start using cmd-rest: download a pre-built binary and run it right away, or build it yourself from source. Both produce the same CLI — pick whichever fits your workflow.
+
+## Option 1: Download the binary
+
+Grab the latest release for your operating system from the [Download page](/download) (or directly from the [GitHub releases page](https://github.com/snytkine/cmd-rest/releases)).
+
+If you're downloading for macOS, make sure to pick the build that matches your Mac's chip:
+
+- **Apple Silicon** (M1/M2/M3/M4 — the default on newer Macs): `cmd-rest-macos-aarch64`
+- **Intel** (older Macs): `cmd-rest-macos-intelx86`
+
+<div class="notice">
+
+Important — macOS users
+
+The macOS binaries are not signed with an Apple developer certificate, so macOS will refuse to run them right after download ("cannot be opened because the developer cannot be verified"). Clear the quarantine flag first:
+
+```bash
+# Intel Mac
+xattr -d com.apple.quarantine ~/Downloads/cmd-rest-macos-intelx86
+
+# Apple Silicon Mac (default on newer Macs)
+xattr -d com.apple.quarantine ~/Downloads/cmd-rest-macos-aarch64
+```
+
+Then move the binary into `/usr/local/bin`, rename it to `cmd-rest`, and make it executable. This step needs `sudo` because `/usr/local/bin` is owned by root:
+
+```bash
+# Replace the filename below with the one you downloaded
+sudo mv ~/Downloads/cmd-rest-macos-aarch64 /usr/local/bin/cmd-rest
+sudo chmod +x /usr/local/bin/cmd-rest
+```
+
+Once moved, the `cmd-rest` command is available from any directory in the macOS terminal.
+
+</div>
+
+## Option 2: Build from source
+
+The instructions below are for building cmd-rest from source.
+
 ## Prerequisites
 
 - **GraalVM Java 25** — the project requires Java 25. Install it using [sdkman](https://sdkman.io/):

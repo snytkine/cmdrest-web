@@ -20,6 +20,9 @@
   --color-green-bright: #4ade80;  /* glows and highlights on dark chrome  */
   --color-green-soft: #dcfce7;    /* soft green wash backgrounds          */
   --color-terminal: #0f172a;      /* dark chrome for code blocks          */
+  --color-amber: #b45309;         /* warning/notice text (amber-700)      */
+  --color-amber-line: #fcd34d;    /* warning/notice border (amber-300)    */
+  --color-amber-soft: #fffbeb;    /* warning/notice background (amber-50) */
 
   /* ---- Typography ------------------------------------------------------ */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -597,6 +600,45 @@ code {
 .download-card__note {
   font-size: 14.5px;
   flex: 1;
+}
+
+/* ---- Notice box -------------------------------------------------------------------- */
+
+.notice {
+  background: var(--color-amber-soft);
+  border: 1px solid var(--color-amber-line);
+  border-radius: var(--radius);
+  padding: 26px 30px;
+  margin-bottom: 48px;
+}
+
+/* Styled structurally (not by class) so the same markup works whether the
+   notice is hand-written JSX (DownloadPage) or a bare `<div class="notice">`
+   of plain paragraphs and fenced code blocks embedded in a docs markdown
+   file and rendered through marked. */
+.notice > p:first-child {
+  color: var(--color-amber);
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.notice > p:not(:first-child) {
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.notice .code-block,
+.notice > pre {
+  margin-bottom: 14px;
+}
+
+.notice > p:last-child,
+.notice > pre:last-child,
+.notice .code-block:last-child {
+  margin-bottom: 0;
 }
 
 /* ---- CTA banner -------------------------------------------------------------------- */
