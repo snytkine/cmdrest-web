@@ -12,11 +12,14 @@ import { DownloadPage } from './DownloadPage';
 import { DocsPage } from './DocsPage';
 import { DocArticlePage } from './DocArticlePage';
 import { DocExamplesPage } from './DocExamplesPage';
+import { TutorialsPage } from './TutorialsPage';
+import { TutorialArticlePage } from './TutorialArticlePage';
 import { NotFoundPage } from './NotFoundPage';
 import { features, getHighlightedFeatures } from '../content/features';
 import { downloadTargets } from '../content/downloads';
 import { site } from '../content/site';
 import { docNavItems, firstDocPage } from '../docs/config';
+import { tutorialPages, firstTutorialPage } from '../tutorials/config';
 import { renderWithRouter, captureLogs } from '../test/helpers';
 import type { CaptureTransport } from '../test/helpers';
 
@@ -233,6 +236,51 @@ describe('DocExamplesPage', () => {
     expect(screen.getByRole('heading', { name: 'Your first test suite' })).toBeInTheDocument();
     // The filename appears both in the intro copy and the code-block title.
     expect(screen.getAllByText('users-api.test.yaml').length).toBeGreaterThan(0);
+  });
+});
+
+describe('TutorialsPage', () => {
+  it('renders a sidebar link for every configured tutorial', () => {
+    renderWithRouter(<TutorialsPage />);
+    for (const page of tutorialPages) {
+      const expectedPath = page === firstTutorialPage ? '/tutorials' : `/tutorials/${page.slug}`;
+      expect(screen.getByRole('link', { name: page.title })).toHaveAttribute(
+        'href',
+        expectedPath,
+      );
+    }
+  });
+
+  it('logs a tutorials-nav-click interaction naming the page', () => {
+    renderWithRouter(<TutorialsPage />);
+    fireEvent.click(screen.getByRole('link', { name: firstTutorialPage.title }));
+    expect(capture.records).toContainEqual(
+      expect.objectContaining({
+        message: 'tutorials-nav-click',
+        data: { page: firstTutorialPage.title },
+      }),
+    );
+  });
+});
+
+describe('TutorialArticlePage', () => {
+  it('renders the title, description and content for the given slug', () => {
+    renderWithRouter(<TutorialArticlePage slug={firstTutorialPage.slug} />);
+    expect(screen.getByTestId(`tutorial-${firstTutorialPage.slug}`)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(firstTutorialPage.title);
+    expect(screen.getByText(firstTutorialPage.description)).toBeInTheDocument();
+  });
+
+  it('embeds the tutorial video with an accessible title', () => {
+    renderWithRouter(<TutorialArticlePage slug={firstTutorialPage.slug} />);
+    expect(
+      screen.getByTitle('Download and Install CmdRest on macOS'),
+    ).toHaveAttribute('src', 'https://www.youtube.com/embed/4MvfghJnmbo');
+  });
+
+  it('shows the 404 page for an unknown slug', () => {
+    renderWithRouter(<TutorialArticlePage slug="no-such-tutorial" />);
+    expect(screen.getByRole('heading', { name: '404' })).toBeInTheDocument();
   });
 });
 

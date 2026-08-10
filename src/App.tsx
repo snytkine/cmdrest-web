@@ -13,8 +13,11 @@ import { DownloadPage } from './pages/DownloadPage';
 import { DocsPage } from './pages/DocsPage';
 import { DocArticlePage } from './pages/DocArticlePage';
 import { DocExamplesPage } from './pages/DocExamplesPage';
+import { TutorialsPage } from './pages/TutorialsPage';
+import { TutorialArticlePage } from './pages/TutorialArticlePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { firstDocPage, EXAMPLES_SLUG } from './docs/config';
+import { firstTutorialPage } from './tutorials/config';
 
 /** The application's route table. */
 export function App(): React.JSX.Element {
@@ -29,6 +32,11 @@ export function App(): React.JSX.Element {
           <Route index element={<DocArticlePage slug={firstDocPage.slug} />} />
           <Route path={EXAMPLES_SLUG} element={<DocExamplesPage />} />
           <Route path=":slug" element={<DocArticlePage />} />
+        </Route>
+        <Route path="tutorials" element={<TutorialsPage />}>
+          {/* The tutorials index shows the first configured tutorial in place. */}
+          <Route index element={<TutorialArticlePage slug={firstTutorialPage.slug} />} />
+          <Route path=":slug" element={<TutorialArticlePage />} />
         </Route>
         {/* Catch-all: any unknown path shows the 404 page. */}
         <Route path="*" element={<NotFoundPage />} />

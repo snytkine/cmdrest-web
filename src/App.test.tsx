@@ -71,6 +71,25 @@ describe('App routing', () => {
     expect(screen.getByRole('heading', { name: 'Your first test suite' })).toBeInTheDocument();
   });
 
+  it('renders the tutorials section at /tutorials with the first tutorial', () => {
+    renderWithRouter(<App />, '/tutorials');
+    expect(screen.getByRole('heading', { name: 'Tutorials' })).toBeInTheDocument();
+    // The index route loads and renders the first configured tutorial.
+    expect(screen.getByTestId('tutorial-download-and-install')).toBeInTheDocument();
+  });
+
+  it('renders a tutorial page at /tutorials/<slug>', () => {
+    renderWithRouter(<App />, '/tutorials/download-and-install');
+    expect(screen.getByTestId('tutorial-download-and-install')).toBeInTheDocument();
+  });
+
+  it('navigates to the Tutorials page through the navbar', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<App />);
+    await user.click(screen.getByRole('link', { name: 'Tutorials' }));
+    expect(screen.getByRole('heading', { name: 'Tutorials' })).toBeInTheDocument();
+  });
+
   it('shows the 404 page for unknown paths', () => {
     renderWithRouter(<App />, '/no-such-page');
     expect(screen.getByRole('heading', { name: '404' })).toBeInTheDocument();

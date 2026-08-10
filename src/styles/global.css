@@ -991,6 +991,33 @@ code {
   scroll-margin-top: 88px;
 }
 
+/* ---- Tutorials section ---------------------------------------------------------------------- */
+
+.tutorial-description {
+  color: var(--color-ink-soft);
+  font-size: 17px;
+  margin-bottom: 1.75em;
+}
+
+/* Fluid 16:9 video box: scales with its column at a locked aspect ratio,
+   so the iframe never overflows on narrow screens and never reserves the
+   wrong amount of space (no layout shift once the video loads). */
+.youtube-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.youtube-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* ---- Misc ------------------------------------------------------------------------------------ */
 
 /* Accessible focus outline for keyboard users. */

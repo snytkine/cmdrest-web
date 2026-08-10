@@ -53,4 +53,5 @@ export const navItems: readonly NavItem[] = [
   { label: 'Features', path: '/features' },
   { label: 'Download', path: '/download' },
   { label: 'Docs', path: '/docs' },
+  { label: 'Tutorials', path: '/tutorials' },
 ];
