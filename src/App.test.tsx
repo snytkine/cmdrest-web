@@ -1,10 +1,10 @@
 /**
  * Integration tests for the full application: routing between pages via
- * the navbar, the shared layout chrome, page-view logging and scroll
- * restoration on navigation.
+ * the navbar (including the animated page transition), the shared
+ * layout chrome, page-view logging and scroll restoration on navigation.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from './App';
 import { renderWithRouter, captureLogs } from './test/helpers';
@@ -19,6 +19,15 @@ vi.mock('./matrix/MatrixScene', () => ({
 vi.mock('./wordrain/WordRainScene', () => ({
   WordRainScene: () => <div data-testid="wordrain-scene-mock" />,
 }));
+
+/**
+ * Ends the exit animation of the page on screen. jsdom does not run CSS
+ * animations, so tests fire the `animationend` event that makes
+ * PageTransition swap in the page that was navigated to.
+ */
+function finishPageTransition(): void {
+  fireEvent.animationEnd(screen.getByTestId('page-transition'));
+}
 
 /** Restore function of the log capture installed per-test. */
 let restoreLogs: (() => void) | undefined;
@@ -42,6 +51,10 @@ describe('App routing', () => {
     const user = userEvent.setup();
     renderWithRouter(<App />);
     await user.click(screen.getByRole('link', { name: 'Features' }));
+    // The home page stays up while it animates out...
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/zero code/i);
+    // ...and the Features page replaces it when that animation ends.
+    finishPageTransition();
     expect(
       screen.getByRole('heading', { name: /Every feature, built for speed/ }),
     ).toBeInTheDocument();
@@ -51,6 +64,7 @@ describe('App routing', () => {
     const user = userEvent.setup();
     renderWithRouter(<App />);
     await user.click(screen.getByRole('link', { name: 'Download' }));
+    finishPageTransition();
     expect(screen.getByRole('heading', { name: /Download CmdRest/ })).toBeInTheDocument();
   });
 
@@ -87,6 +101,7 @@ describe('App routing', () => {
     const user = userEvent.setup();
     renderWithRouter(<App />);
     await user.click(screen.getByRole('link', { name: 'Tutorials' }));
+    finishPageTransition();
     expect(screen.getByRole('heading', { name: 'Tutorials' })).toBeInTheDocument();
   });
 
@@ -119,6 +134,19 @@ describe('App routing', () => {
     renderWithRouter(<App />);
     vi.mocked(window.scrollTo).mockClear();
     await user.click(screen.getByRole('link', { name: 'Features' }));
+    // The old page must not jump while it is still animating out.
+    expect(window.scrollTo).not.toHaveBeenCalled();
+    finishPageTransition();
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'instant' });
+  });
+
+  it('switches documentation pages without a transition', async () => {
+    const user = userEvent.setup();
+    renderWithRouter(<App />, '/docs');
+    vi.mocked(window.scrollTo).mockClear();
+    await user.click(screen.getByRole('link', { name: 'CLI Reference' }));
+    expect(screen.getByTestId('page-transition')).toHaveClass('page--enter');
+    expect(await screen.findByTestId('doc-cli-reference')).toBeInTheDocument();
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0 });
   });
 });

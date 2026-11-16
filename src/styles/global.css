@@ -4,7 +4,8 @@
  * Design language: light background, generous white space, slate ink for
  * text and terminal-green accents. All colors, spacing and fonts are
  * defined as CSS custom properties in :root so the theme can be adjusted
- * in one place.
+ * in one place. A dark theme overrides the color tokens when
+ * <html data-theme="dark"> is set (see src/hooks/useTheme.ts).
  */
 
 :root {
@@ -23,6 +24,12 @@
   --color-amber: #b45309;         /* warning/notice text (amber-700)      */
   --color-amber-line: #fcd34d;    /* warning/notice border (amber-300)    */
   --color-amber-soft: #fffbeb;    /* warning/notice background (amber-50) */
+  --color-terminal-line: transparent;      /* outline of dark chrome (dark theme only) */
+  --color-button: #16a34a;        /* filled primary button                */
+  --color-button-hover: #15803d;  /* filled primary button, hovered       */
+  --color-nav-bg: rgba(248, 250, 252, 0.85); /* translucent navbar        */
+  --color-hover: rgba(15, 23, 42, 0.05);   /* hover wash on nav links     */
+  --color-switch-off: #cbd5e1;    /* theme switch track when off          */
 
   /* ---- Typography ------------------------------------------------------ */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -33,6 +40,38 @@
   --radius: 14px;
   --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
   --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 16px 40px rgba(15, 23, 42, 0.1);
+
+  color-scheme: light;
+}
+
+/* ---- Dark theme ---------------------------------------------------------
+ * Same token names, re-tuned for a dark slate background. The green
+ * accents get brighter so text and icons keep their contrast; filled
+ * buttons keep the darker green so their white labels stay readable.
+ */
+:root[data-theme='dark'] {
+  --color-bg: #0b1120;
+  --color-surface: #131c2e;
+  --color-ink: #f1f5f9;
+  --color-ink-soft: #b4c0d2;
+  --color-ink-faint: #8494ab;
+  --color-line: #263349;
+  --color-green: #4ade80;
+  --color-green-dark: #86efac;
+  --color-green-soft: rgba(74, 222, 128, 0.14);
+  --color-terminal: #060b16;
+  --color-terminal-line: #263349;
+  --color-amber: #fbbf24;
+  --color-amber-line: rgba(251, 191, 36, 0.4);
+  --color-amber-soft: rgba(251, 191, 36, 0.08);
+  --color-nav-bg: rgba(11, 17, 32, 0.85);
+  --color-hover: rgba(241, 245, 249, 0.07);
+  --color-switch-off: #3b4a63;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 16px 40px rgba(0, 0, 0, 0.5);
+
+  color-scheme: dark;
 }
 
 /* ---- Reset & base ------------------------------------------------------ */
@@ -55,6 +94,8 @@ body {
   color: var(--color-ink-soft);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  /* Cross-fade when the theme is switched. */
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 h1, h2, h3, h4 {
@@ -189,7 +230,8 @@ code {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(248, 250, 252, 0.85);
+  background: var(--color-nav-bg);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-line);
 }
@@ -197,7 +239,7 @@ code {
 .navbar__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 18px;
   height: 68px;
 }
 
@@ -221,23 +263,31 @@ code {
   display: block;
 }
 
+/* Pushed to the right; the theme switch follows it. */
 .navbar__links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  margin-left: auto;
 }
 
 .navbar__link {
-  padding: 8px 14px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 12px 6px 7px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   color: var(--color-ink-soft);
+  /* Gives the icon's hover tilt its 3D depth. */
+  perspective: 320px;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .navbar__link:hover {
   color: var(--color-ink);
-  background: rgba(15, 23, 42, 0.05);
+  background: var(--color-hover);
 }
 
 .navbar__link--active {
@@ -247,6 +297,193 @@ code {
 
 .navbar__github {
   margin-left: 10px;
+  padding: 9px 18px;
+}
+
+/* Right end of the bar: theme switch, plus the hamburger on small screens. */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+/* ---- Glass icons (navbar links) ------------------------------------------- */
+
+/* A glossy rounded tile holding a white glyph. Each icon picks its own
+   two-stop gradient through --icon-a / --icon-b. */
+.glass-icon {
+  --icon-a: #6ee7a8;
+  --icon-b: #15803d;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 30%;
+  overflow: hidden;
+  background: linear-gradient(150deg, var(--icon-a), var(--icon-b));
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    inset 0 -4px 7px rgba(0, 45, 25, 0.3),
+    0 3px 8px color-mix(in srgb, var(--icon-b) 45%, transparent);
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.4s ease;
+}
+
+.glass-icon--features {
+  --icon-a: #5eead4;
+  --icon-b: #0f766e;
+}
+
+.glass-icon--download {
+  --icon-a: #34d399;
+  --icon-b: #065f46;
+}
+
+.glass-icon--docs {
+  --icon-a: #a3e635;
+  --icon-b: #3f8f1f;
+}
+
+.glass-icon--tutorials {
+  --icon-a: #a3b8cc;
+  --icon-b: #3f4f66;
+}
+
+/* Upper gloss: the light reflection on the glass. */
+.glass-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 48% 0;
+  border-radius: inherit;
+  border-bottom-left-radius: 60% 30%;
+  border-bottom-right-radius: 60% 30%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08));
+}
+
+/* Sheen that sweeps across on hover. */
+.glass-icon::after {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.75) 50%, transparent 58%);
+  transform: translateX(-70%);
+  transition: transform 0.7s ease;
+}
+
+.glass-icon svg {
+  position: relative;
+  z-index: 1;
+  width: 66%;
+  height: 66%;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 1px rgba(0, 45, 25, 0.45));
+}
+
+/* Hover / keyboard focus: tilt the tile towards the viewer and run the sheen. */
+.navbar__link:hover .glass-icon,
+.navbar__link:focus-visible .glass-icon {
+  transform: rotateX(14deg) rotateY(-16deg) translateY(-2px) scale(1.1);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    inset 0 -4px 7px rgba(0, 45, 25, 0.3),
+    5px 9px 14px color-mix(in srgb, var(--icon-b) 45%, transparent);
+}
+
+.navbar__link:hover .glass-icon::after,
+.navbar__link:focus-visible .glass-icon::after {
+  transform: translateX(70%);
+}
+
+/* ---- Theme toggle (macOS-style switch) ------------------------------------ */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+}
+
+/* Sun and moon glyphs either side of the switch. */
+.theme-toggle__icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  background: var(--color-switch-off);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: background-color 0.25s ease;
+}
+
+.switch[aria-checked='true'] {
+  background: var(--color-button);
+}
+
+.switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+  /* Slight overshoot so the knob "snaps" into place. */
+  transition: transform 0.25s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+
+.switch[aria-checked='true'] .switch__knob {
+  transform: translateX(18px);
+}
+
+/* ---- Page transitions ------------------------------------------------------ */
+
+/* PageTransition.tsx puts one of these classes on the page wrapper: the
+   old page plays page-out, then the new one is swapped in and plays
+   page-in. The swap waits for page-out's animationend event. */
+.page--enter {
+  animation: page-in 0.38s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.page--exit {
+  animation: page-out 0.2s ease-in both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+    filter: blur(4px);
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
 /* Hamburger button is hidden on desktop, shown on mobile. */
@@ -260,9 +497,14 @@ code {
   color: var(--color-ink);
 }
 
-@media (max-width: 760px) {
+/* Below this width the icon links no longer fit next to the brand. */
+@media (max-width: 980px) {
   .navbar__toggle {
     display: inline-flex;
+  }
+
+  .navbar__actions {
+    margin-left: auto;
   }
 
   /* Collapse the link row into a dropdown panel under the bar. */
@@ -278,6 +520,7 @@ code {
     border-bottom: 1px solid var(--color-line);
     padding: 12px 24px 20px;
     gap: 4px;
+    margin-left: 0;
     box-shadow: var(--shadow-card);
   }
 
@@ -308,13 +551,13 @@ code {
 }
 
 .button--primary {
-  background: var(--color-green);
+  background: var(--color-button);
   color: #ffffff;
   box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28);
 }
 
 .button--primary:hover {
-  background: var(--color-green-dark);
+  background: var(--color-button-hover);
   color: #ffffff;
   transform: translateY(-1px);
 }
@@ -509,6 +752,7 @@ code {
 
 .code-block {
   background: var(--color-terminal);
+  border: 1px solid var(--color-terminal-line);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
@@ -645,6 +889,7 @@ code {
 
 .cta-banner {
   background: var(--color-terminal);
+  border: 1px solid var(--color-terminal-line);
   border-radius: 20px;
   padding: 64px 40px;
   text-align: center;
@@ -917,6 +1162,7 @@ code {
 /* Fenced code blocks reuse the dark terminal look of .code-block__body. */
 .markdown pre {
   background: var(--color-terminal);
+  border: 1px solid var(--color-terminal-line);
   border-radius: var(--radius);
   padding: 20px 22px;
   overflow-x: auto;
@@ -1027,7 +1273,9 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Respect users who prefer reduced motion: disable our transitions. */
+/* Respect users who prefer reduced motion: disable our transitions.
+   Durations are near-zero rather than "none" so animationend still
+   fires, which the page transition relies on to swap pages. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

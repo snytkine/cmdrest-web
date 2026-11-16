@@ -1,30 +1,32 @@
 /**
  * Application shell shared by every page: decorative background, sticky
- * navbar, the routed page content (<Outlet/>) and the footer.
+ * navbar, the routed page content (passed as children) and the footer.
  *
- * The layout also owns two routing side effects:
- * - every navigation is logged as a page view,
- * - the window scrolls back to the top on route change (SPA routers
- *   preserve scroll position by default, which feels wrong for a
- *   multi-page marketing site).
+ * The layout also logs every navigation as a page view. Scrolling back
+ * to the top on route change is handled by {@link PageTransition}, which
+ * knows when the new page is actually swapped in.
  */
 import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { NavBar } from './NavBar';
 import { Footer } from './Footer';
 import { TechBackground } from './TechBackground';
 import { logPageView } from '../logging';
 
+interface LayoutProps {
+  /** The routed page content rendered between navbar and footer. */
+  readonly children: ReactNode;
+}
+
 /** The shared page chrome around all routed pages. */
-export function Layout(): React.JSX.Element {
+export function Layout({ children }: LayoutProps): React.JSX.Element {
   const location = useLocation();
 
-  // Runs on every route change (pathname is the dependency).
+  // Record every route change (pathname is the dependency) in the
+  // logging framework.
   useEffect(() => {
-    // Record the navigation in the logging framework.
     logPageView(location.pathname);
-    // Reset scroll so each page starts at the top.
-    window.scrollTo({ top: 0 });
   }, [location.pathname]);
 
   return (
@@ -32,9 +34,7 @@ export function Layout(): React.JSX.Element {
       <TechBackground />
       <div className="app-shell">
         <NavBar />
-        <main className="app-shell__main">
-          <Outlet />
-        </main>
+        <main className="app-shell__main">{children}</main>
         <Footer />
       </div>
     </>

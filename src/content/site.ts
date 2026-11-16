@@ -39,19 +39,24 @@ export const site: SiteMeta = {
   },
 };
 
+/** Names of the small glass icons shown next to the navbar links. */
+export type IconName = 'home' | 'features' | 'download' | 'docs' | 'tutorials';
+
 /** A navigation entry rendered in the top navbar. */
 export interface NavItem {
   /** Visible label of the link. */
   readonly label: string;
   /** Router path the link navigates to. */
   readonly path: string;
+  /** Icon rendered before the label. */
+  readonly icon: IconName;
 }
 
 /** Ordered list of internal pages shown in the navigation bar. */
 export const navItems: readonly NavItem[] = [
-  { label: 'Home', path: '/' },
-  { label: 'Features', path: '/features' },
-  { label: 'Download', path: '/download' },
-  { label: 'Docs', path: '/docs' },
-  { label: 'Tutorials', path: '/tutorials' },
+  { label: 'Home', path: '/', icon: 'home' },
+  { label: 'Features', path: '/features', icon: 'features' },
+  { label: 'Download', path: '/download', icon: 'download' },
+  { label: 'Docs', path: '/docs', icon: 'docs' },
+  { label: 'Tutorials', path: '/tutorials', icon: 'tutorials' },
 ];

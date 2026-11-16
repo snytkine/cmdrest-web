@@ -9,6 +9,7 @@
       content="CmdRest — a blazing-fast, zero-code command line tool for testing REST APIs. Define test suites in YAML, run them anywhere: macOS, Windows and Linux."
     />
     <meta name="theme-color" content="#f8fafc" />
+    <meta name="color-scheme" content="light dark" />
     <!-- Open Graph tags so links shared on social platforms render a rich preview. -->
     <meta property="og:title" content="CmdRest — Zero-Code REST API Testing from the Command Line" />
     <meta
@@ -24,6 +25,25 @@
       rel="stylesheet"
     />
     <title>CmdRest — Zero-Code REST API Testing CLI</title>
+    <script>
+      // Apply the saved theme (or, failing that, the system preference)
+      // before first paint to avoid a flash of the wrong theme. The
+      // storage key matches THEME_STORAGE_KEY in src/hooks/useTheme.ts.
+      (function () {
+        try {
+          var saved = localStorage.getItem('cmdrest-theme');
+          var theme =
+            saved === 'light' || saved === 'dark'
+              ? saved
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

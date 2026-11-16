@@ -9,7 +9,8 @@ import react from '@vitejs/plugin-react';
  * - The `test` block configures Vitest (unit test runner):
  *   - `environment: 'jsdom'` simulates a browser DOM so React components
  *     can be rendered and asserted against in tests.
- *   - `setupFiles` runs global test setup (jest-dom matchers, mocks).
+ *   - `setupFiles` runs global test setup (jest-dom matchers, mocks);
+ *     the polyfills come first because they must load before React DOM.
  *   - `coverage` uses the V8 provider and only measures `src/` files,
  *     excluding type-only files and the app entry point (bootstrap code
  *     that cannot be meaningfully unit tested).
@@ -19,7 +20,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./src/test/polyfills.ts', './src/test/setup.ts'],
     css: true,
     coverage: {
       provider: 'v8',

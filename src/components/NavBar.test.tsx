@@ -1,6 +1,7 @@
 /**
- * Tests for the navigation bar: link rendering, active state, the mobile
- * hamburger menu behavior and interaction logging.
+ * Tests for the navigation bar: link rendering (with icons), active
+ * state, the mobile hamburger menu behavior, the theme switch and
+ * interaction logging.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { screen } from '@testing-library/react';
@@ -15,6 +16,9 @@ let restoreLogs: (() => void) | undefined;
 afterEach(() => {
   restoreLogs?.();
   restoreLogs = undefined;
+  // The theme switch writes to <html> and localStorage; reset both.
+  delete document.documentElement.dataset.theme;
+  localStorage.clear();
 });
 
 describe('NavBar', () => {
@@ -23,6 +27,37 @@ describe('NavBar', () => {
     for (const item of navItems) {
       expect(screen.getByRole('link', { name: item.label })).toBeInTheDocument();
     }
+  });
+
+  it('shows a decorative icon in every navigation link', () => {
+    renderWithRouter(<NavBar />);
+    for (const item of navItems) {
+      const link = screen.getByRole('link', { name: item.label });
+      expect(link.querySelector(`.glass-icon--${item.icon}`)).toBeInTheDocument();
+    }
+  });
+
+  it('switches between the light and dark theme and logs the change', async () => {
+    const { capture, restore } = captureLogs();
+    restoreLogs = restore;
+    const user = userEvent.setup();
+    renderWithRouter(<NavBar />);
+    const toggle = screen.getByRole('switch', { name: 'Dark mode' });
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(capture.records).toContainEqual(
+      expect.objectContaining({ message: 'theme-toggle', data: { theme: 'dark' } }),
+    );
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(capture.records).toContainEqual(
+      expect.objectContaining({ message: 'theme-toggle', data: { theme: 'light' } }),
+    );
   });
 
   it('links the GitHub button to the source repository', () => {

@@ -1,15 +1,20 @@
 /**
  * Sticky top navigation bar.
  *
- * Desktop: brand on the left, page links plus a GitHub link on the right.
- * Mobile (<=760px): the links collapse behind a hamburger button into a
- * dropdown panel. Menu toggles and outbound clicks are logged through
- * the site's logging framework.
+ * Desktop: brand on the left; page links (each with a small glass icon
+ * that tilts on hover), a GitHub link and the light/dark theme switch on
+ * the right. Small screens (<=980px): the links collapse behind a
+ * hamburger button into a dropdown panel; the theme switch stays in the
+ * bar. Menu toggles, theme changes and outbound clicks are logged
+ * through the site's logging framework.
  */
 import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { navItems, site } from '../content/site';
 import { logInteraction } from '../logging';
+import { useTheme } from '../hooks/useTheme';
+import { GlassIcon } from './GlassIcon';
+import { ThemeToggle } from './ThemeToggle';
 
 /** Small terminal-window logo mark rendered next to the brand name. */
 function LogoMark(): React.JSX.Element {
@@ -33,6 +38,7 @@ function LogoMark(): React.JSX.Element {
 export function NavBar(): React.JSX.Element {
   // Whether the mobile dropdown menu is currently open.
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   /** Toggles the mobile menu and logs the interaction. */
   const handleToggle = (): void => {
@@ -48,6 +54,12 @@ export function NavBar(): React.JSX.Element {
     setMenuOpen(false);
   };
 
+  /** Flips the color theme and logs the theme being switched to. */
+  const handleThemeToggle = (): void => {
+    logInteraction('theme-toggle', { theme: theme === 'dark' ? 'light' : 'dark' });
+    toggleTheme();
+  };
+
   return (
     <header className="navbar">
       <div className="container navbar__inner">
@@ -55,21 +67,6 @@ export function NavBar(): React.JSX.Element {
           <LogoMark />
           {site.name}
         </Link>
-
-        {/* Hamburger toggle — only visible on small screens (CSS). */}
-        <button
-          type="button"
-          className="navbar__toggle"
-          aria-expanded={menuOpen}
-          aria-controls="primary-navigation"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          onClick={handleToggle}
-        >
-          {/* Simple hamburger / close glyph depending on state. */}
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-          </svg>
-        </button>
 
         <nav
           id="primary-navigation"
@@ -87,6 +84,7 @@ export function NavBar(): React.JSX.Element {
               }
               onClick={() => handleNavigate(item.label)}
             >
+              <GlassIcon name={item.icon} />
               {item.label}
             </NavLink>
           ))}
@@ -100,6 +98,25 @@ export function NavBar(): React.JSX.Element {
             GitHub
           </a>
         </nav>
+
+        <div className="navbar__actions">
+          <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
+
+          {/* Hamburger toggle — only visible on small screens (CSS). */}
+          <button
+            type="button"
+            className="navbar__toggle"
+            aria-expanded={menuOpen}
+            aria-controls="primary-navigation"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={handleToggle}
+          >
+            {/* Simple hamburger / close glyph depending on state. */}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              {menuOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
   );

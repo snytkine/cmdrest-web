@@ -6,7 +6,7 @@
  *   against a real (in-memory) IndexedDB implementation, which jsdom
  *   does not provide.
  * - Stubs `window.scrollTo`, which jsdom declares but does not implement
- *   (the Layout component calls it on every route change).
+ *   (the PageTransition component calls it on every route change).
  */
 import '@testing-library/jest-dom/vitest';
 import 'fake-indexeddb/auto';
