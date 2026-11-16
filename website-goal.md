@@ -32,11 +32,11 @@ List some key features:
     - Use template stype placeholders in test suite to make tests more flefible
     - Support for external .env files to store parameters or secrets.
 
-3. A lint to project's release page: https://github.com/snytkine/api-tester-cli/releases  Mention that builds are available for MacOS, Windows and Linux.
+3. A lint to project's release page: https://github.com/snytkine/cmd-rest/releases  Mention that builds are available for MacOS, Windows and Linux.
 
-4. Link to source code with mention that this is an open source project. https://github.com/snytkine/api-tester-cli
+4. Link to source code with mention that this is an open source project. https://github.com/snytkine/cmd-rest
 
-5. Link to documentation page: https://snytkine.github.io/api-tester-cli/test-suite-configuration/
+5. Link to documentation page: https://snytkine.github.io/cmd-rest/test-suite-configuration/
 
 
 All the Code must be well documented, including commets for all classes and method and components. Eveery significate function of condition should have a comment with explanation what it's doing.
